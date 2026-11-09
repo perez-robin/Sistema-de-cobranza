@@ -21,8 +21,16 @@ import {
   ArrowRight,
   Send,
   UserCheck,
+  Download,
+  Printer,
+  Share2,
+  FileSpreadsheet,
+  FileText,
+  X,
 } from 'lucide-react';
 import { shareViaWhatsApp } from '../utils/pdfReceipt';
+import { generateReceiptPdf, generateReceiptDocx, generateReceiptXlsx } from '../utils/documentGenerators';
+import { printReceipt } from '../utils/printService';
 
 interface Props {
   clients: Client[];
@@ -47,6 +55,7 @@ export const RouteView: React.FC<Props> = ({
 }) => {
   const [filterStatus, setFilterStatus] = useState<'all' | 'r' | 'a' | 'c' | 'v'>('all');
   const [undoConfirmId, setUndoConfirmId] = useState<string | null>(null);
+  const [receiptModalClient, setReceiptModalClient] = useState<Client | null>(null);
 
   const hoy = isoToday();
   const currentModeClients = clients.filter((c) => c.tipo === mode);
@@ -116,7 +125,7 @@ export const RouteView: React.FC<Props> = ({
           <p className="text-lg font-black text-emerald-600 dark:text-emerald-400 mt-0.5">
             {formatQ(totalCobradoHoy)}
           </p>
-          <span className="text-[10px] text-slate-400 font-medium">Recaudación en ruta</span>
+          <span className="text-[10px] text-slate-400 font-medium">Recaudación del día</span>
         </div>
 
         <div className="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
@@ -149,7 +158,7 @@ export const RouteView: React.FC<Props> = ({
         <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-300 dark:border-amber-700/60 shadow-sm">
           <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300 text-xs font-bold mb-2">
             <Sparkles className="w-4 h-4 text-amber-600 animate-spin" />
-            <span>🔔 Renovaciones Disponibles ({renewalDueClients.length} clientes listos):</span>
+            <span>Renovaciones Disponibles ({renewalDueClients.length} clientes listos):</span>
           </div>
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
             {renewalDueClients.map(({ client, libre }) => (
@@ -183,52 +192,56 @@ export const RouteView: React.FC<Props> = ({
         </button>
         <button
           onClick={() => setFilterStatus('r')}
-          className={`px-3 py-1.5 rounded-xl border transition shrink-0 flex items-center gap-1 ${
+          className={`px-3 py-1.5 rounded-xl border transition shrink-0 flex items-center gap-1.5 ${
             filterStatus === 'r'
               ? 'bg-rose-600 text-white border-rose-600 shadow-sm'
               : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-900'
           }`}
         >
-          <span>🔴 En mora</span>
+          <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0"></span>
+          <span>En mora</span>
           <span className="px-1.5 py-0.2 rounded-full bg-rose-200 dark:bg-rose-900 text-rose-900 dark:text-rose-200 text-[10px]">
             {statusCounts.r}
           </span>
         </button>
         <button
           onClick={() => setFilterStatus('a')}
-          className={`px-3 py-1.5 rounded-xl border transition shrink-0 flex items-center gap-1 ${
+          className={`px-3 py-1.5 rounded-xl border transition shrink-0 flex items-center gap-1.5 ${
             filterStatus === 'a'
               ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-sm'
               : 'bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-400 border-amber-200 dark:border-amber-900'
           }`}
         >
-          <span>🟡 2-3 días</span>
+          <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
+          <span>2-3 días atraso</span>
           <span className="px-1.5 py-0.2 rounded-full bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-200 text-[10px]">
             {statusCounts.a}
           </span>
         </button>
         <button
           onClick={() => setFilterStatus('c')}
-          className={`px-3 py-1.5 rounded-xl border transition shrink-0 flex items-center gap-1 ${
+          className={`px-3 py-1.5 rounded-xl border transition shrink-0 flex items-center gap-1.5 ${
             filterStatus === 'c'
               ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
               : 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-900'
           }`}
         >
-          <span>🔵 Por cobrar</span>
+          <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0"></span>
+          <span>Por cobrar hoy</span>
           <span className="px-1.5 py-0.2 rounded-full bg-blue-200 dark:bg-blue-900 text-blue-900 dark:text-blue-200 text-[10px]">
             {statusCounts.c}
           </span>
         </button>
         <button
           onClick={() => setFilterStatus('v')}
-          className={`px-3 py-1.5 rounded-xl border transition shrink-0 flex items-center gap-1 ${
+          className={`px-3 py-1.5 rounded-xl border transition shrink-0 flex items-center gap-1.5 ${
             filterStatus === 'v'
               ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
               : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900'
           }`}
         >
-          <span>🟢 Cobrados</span>
+          <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+          <span>Cobrados</span>
           <span className="px-1.5 py-0.2 rounded-full bg-emerald-200 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-200 text-[10px]">
             {statusCounts.v}
           </span>
@@ -289,8 +302,8 @@ export const RouteView: React.FC<Props> = ({
                         {client.nombre || 'Cliente sin nombre'}
                       </span>
                       {isEligibleRenewal && (
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200">
-                          🔔 Renovar
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-800">
+                          Renovación disponible
                         </span>
                       )}
                     </div>
@@ -383,11 +396,11 @@ export const RouteView: React.FC<Props> = ({
                         ) : (
                           <>
                             <button
-                              onClick={() => onGenerateReceipt(client)}
+                              onClick={() => setReceiptModalClient(client)}
                               className="px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950 hover:bg-blue-100 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900 text-xs font-bold flex items-center gap-1.5 transition"
                             >
                               <Receipt className="w-3.5 h-3.5 text-blue-600" />
-                              <span>Recibo PDF</span>
+                              <span>Recibo</span>
                             </button>
 
                             <button
@@ -434,6 +447,119 @@ export const RouteView: React.FC<Props> = ({
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* RECEIPT OPTIONS MODAL */}
+      {receiptModalClient && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-4 space-y-3 shadow-2xl border border-slate-200 dark:border-slate-800 text-xs">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+              <div className="flex items-center gap-2">
+                <Receipt className="w-4 h-4 text-blue-600" />
+                <span className="font-bold text-sm text-slate-900 dark:text-slate-100">Comprobante de Pago</span>
+              </div>
+              <button
+                onClick={() => setReceiptModalClient(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 space-y-1">
+              <p className="font-bold text-slate-900 dark:text-slate-100">{receiptModalClient.nombre || 'Cliente'}</p>
+              <p className="text-[11px] text-slate-500">
+                DPI: {receiptModalClient.dpi || 'N/A'} · Cuota: {formatQ(receiptModalClient.cuota)}
+              </p>
+              <p className="text-[10px] text-blue-700 dark:text-blue-400 font-mono">
+                Guardado en: DOCUMENTOS/Recibos/
+              </p>
+            </div>
+
+            <div className="space-y-1.5 pt-1">
+              <button
+                onClick={async () => {
+                  await generateReceiptPdf(receiptModalClient, collectorName);
+                  setReceiptModalClient(null);
+                }}
+                className="w-full py-2 px-3 rounded-xl bg-rose-50 dark:bg-rose-950/60 hover:bg-rose-100 text-rose-800 dark:text-rose-200 font-bold border border-rose-200 dark:border-rose-900 flex items-center justify-between transition"
+              >
+                <div className="flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-rose-600" />
+                  <span>Descargar Recibo en PDF</span>
+                </div>
+                <span className="text-[10px] uppercase font-mono">.pdf</span>
+              </button>
+
+              <button
+                onClick={async () => {
+                  await generateReceiptDocx(receiptModalClient, collectorName);
+                  setReceiptModalClient(null);
+                }}
+                className="w-full py-2 px-3 rounded-xl bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 text-blue-800 dark:text-blue-200 font-bold border border-blue-200 dark:border-blue-900 flex items-center justify-between transition"
+              >
+                <div className="flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-blue-600" />
+                  <span>Descargar Recibo en Word</span>
+                </div>
+                <span className="text-[10px] uppercase font-mono">.docx</span>
+              </button>
+
+              <button
+                onClick={async () => {
+                  await generateReceiptXlsx(receiptModalClient, collectorName);
+                  setReceiptModalClient(null);
+                }}
+                className="w-full py-2 px-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-800 dark:text-emerald-200 font-bold border border-emerald-200 dark:border-emerald-900 flex items-center justify-between transition"
+              >
+                <div className="flex items-center gap-2">
+                  <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+                  <span>Descargar Recibo en Excel</span>
+                </div>
+                <span className="text-[10px] uppercase font-mono">.xlsx</span>
+              </button>
+
+              <button
+                onClick={async () => {
+                  await Promise.all([
+                    generateReceiptPdf(receiptModalClient, collectorName),
+                    generateReceiptDocx(receiptModalClient, collectorName),
+                    generateReceiptXlsx(receiptModalClient, collectorName),
+                  ]);
+                  setReceiptModalClient(null);
+                }}
+                className="w-full py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold flex items-center justify-center gap-2 transition"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Descargar los 3 Formatos (PDF, Word, Excel)</span>
+              </button>
+
+              <div className="grid grid-cols-2 gap-1.5 pt-1">
+                <button
+                  onClick={() => {
+                    printReceipt(receiptModalClient, collectorName);
+                    setReceiptModalClient(null);
+                  }}
+                  className="py-2 px-3 rounded-xl bg-slate-800 dark:bg-slate-100 hover:bg-slate-900 text-white dark:text-slate-900 font-bold flex items-center justify-center gap-1.5 shadow-sm transition"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  <span>Imprimir Recibo</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    shareViaWhatsApp(receiptModalClient, collectorName);
+                    setReceiptModalClient(null);
+                  }}
+                  className="py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold flex items-center justify-center gap-1.5 shadow-sm transition"
+                >
+                  <Share2 className="w-3.5 h-3.5" />
+                  <span>WhatsApp</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

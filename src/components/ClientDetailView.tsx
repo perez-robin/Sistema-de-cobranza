@@ -17,8 +17,19 @@ import {
   promissoryNoteText,
 } from '../utils/calculations';
 import { getPhoto, putPhoto, deletePhoto } from '../utils/idb';
-import { generateStatementPdf, getStatementPlainText } from '../utils/pdfStatement';
-import { generateReceiptPdf, shareViaWhatsApp } from '../utils/pdfReceipt';
+import { getStatementPlainText } from '../utils/pdfStatement';
+import { shareViaWhatsApp } from '../utils/pdfReceipt';
+import {
+  generateStatementPdf,
+  generateStatementDocx,
+  generateStatementXlsx,
+  generateContractPdf,
+  generateContractDocx,
+  generateReceiptPdf as genReceiptPdf,
+  generateReceiptDocx as genReceiptDocx,
+  generateReceiptXlsx as genReceiptXlsx,
+} from '../utils/documentGenerators';
+import { printStatement, printContract, printReceipt } from '../utils/printService';
 import {
   ArrowLeft,
   Camera,
@@ -34,6 +45,9 @@ import {
   Printer,
   Copy,
   Check,
+  Download,
+  FileSpreadsheet,
+  Share2,
 } from 'lucide-react';
 
 interface Props {
@@ -193,7 +207,7 @@ export const ClientDetailView: React.FC<Props> = ({
   // Gemini AI OCR for DPI extraction
   const runDpiOcr = async (blob: Blob) => {
     setOcrLoading(true);
-    onToast('🔍 Escaneando DPI con Inteligencia Artificial...');
+    onToast('Escaneando DPI con Inteligencia Artificial...');
     try {
       const reader = new FileReader();
       reader.onloadend = async () => {
@@ -229,7 +243,7 @@ export const ClientDetailView: React.FC<Props> = ({
 
             if (foundCount > 0) {
               onUpdateClient(updated);
-              onToast(`✨ ¡DPI leído con éxito! Se completaron los datos del cliente.`);
+              onToast('DPI leído con éxito. Se completaron los datos del cliente.');
             } else {
               onToast('No se detectaron datos legibles. Verifique la nitidez o ingréselos a mano.');
             }
@@ -359,7 +373,7 @@ export const ClientDetailView: React.FC<Props> = ({
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 shadow-sm hover:bg-slate-50 transition"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Volver a la ruta</span>
+          <span>Volver al listado</span>
         </button>
 
         <div className="flex items-center gap-1">
@@ -471,8 +485,8 @@ export const ClientDetailView: React.FC<Props> = ({
       {canRenewNow && (
         <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-400 dark:border-amber-600 shadow-sm space-y-3">
           <div className="flex items-center gap-2 text-amber-900 dark:text-amber-200 font-bold text-xs">
-            <Sparkles className="w-4 h-4 text-amber-600 animate-spin" />
-            <span>🔔 ¡CLIENTE APTO PARA RENOVACIÓN! Ha completado {k.n} de {nd(client)} pagos.</span>
+            <Sparkles className="w-4 h-4 text-amber-600" />
+            <span>Cliente apto para renovación: ha completado {k.n} de {nd(client)} pagos.</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end text-xs">
@@ -533,7 +547,7 @@ export const ClientDetailView: React.FC<Props> = ({
               : 'text-slate-600 dark:text-slate-400'
           }`}
         >
-          📋 Cuotas ({client.rows.filter((r) => Number(r.m) > 0).length}/{nd(client)})
+          Cuotas ({client.rows.filter((r) => Number(r.m) > 0).length}/{nd(client)})
         </button>
         <button
           onClick={() => setActiveTab('datos')}
@@ -543,7 +557,7 @@ export const ClientDetailView: React.FC<Props> = ({
               : 'text-slate-600 dark:text-slate-400'
           }`}
         >
-          👤 Datos & Términos
+          Datos y Condiciones
         </button>
         <button
           onClick={() => setActiveTab('fotos')}
@@ -553,7 +567,7 @@ export const ClientDetailView: React.FC<Props> = ({
               : 'text-slate-600 dark:text-slate-400'
           }`}
         >
-          📷 DPI & Fotos
+          Documentos y Fotos
         </button>
         <button
           onClick={() => setActiveTab('estado')}
@@ -563,7 +577,7 @@ export const ClientDetailView: React.FC<Props> = ({
               : 'text-slate-600 dark:text-slate-400'
           }`}
         >
-          📄 Pagaré & PDF
+          Pagaré y Comprobante
         </button>
       </div>
 
@@ -573,7 +587,7 @@ export const ClientDetailView: React.FC<Props> = ({
           {/* Collector input shortcut */}
           <div className="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-3 text-xs">
             <span className="font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">
-              Cobrador en ruta:
+              Cobrador:
             </span>
             <input
               type="text"
@@ -679,7 +693,7 @@ export const ClientDetailView: React.FC<Props> = ({
                         <td className="py-2 px-3 text-right whitespace-nowrap">
                           {isRowPaid ? (
                             <span className="inline-block px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-bold text-[10px]">
-                              ✓ Pagado
+                              Pagado
                             </span>
                           ) : (
                             <button
@@ -698,7 +712,7 @@ export const ClientDetailView: React.FC<Props> = ({
             </div>
 
             <div className="p-3 bg-slate-50 dark:bg-slate-800/40 border-t border-slate-200 dark:border-slate-800 text-[11px] text-rose-600 dark:text-rose-400 font-medium">
-              ⚠️ NOTA: A partir del 3er día de atraso posterior a la fecha programada, el sistema calcula automáticamente Q5.00 de mora por cada pago retrasado.
+              Nota: A partir del 3er día de atraso posterior a la fecha programada, el sistema calcula automáticamente Q5.00 de mora por cada pago retrasado.
             </div>
           </div>
         </div>
@@ -807,7 +821,7 @@ export const ClientDetailView: React.FC<Props> = ({
           {client.hist && client.hist.length > 0 && (
             <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 space-y-2">
               <h4 className="font-bold text-slate-800 dark:text-slate-200 text-xs">
-                📜 Historial de Créditos Anteriores de este Cliente:
+                Historial de Créditos Anteriores de este Cliente:
               </h4>
               <div className="space-y-1.5">
                 {client.hist.map((h, i) => (
@@ -872,7 +886,7 @@ export const ClientDetailView: React.FC<Props> = ({
                   }}
                 />
                 <span className="w-full py-2 px-3 rounded-xl bg-blue-700 hover:bg-blue-800 active:bg-blue-900 text-white font-bold text-center block cursor-pointer transition shadow-sm">
-                  {photoUrls.dpiF ? 'Cambiar Foto Frente' : '📷 Tomar Foto Frente'}
+                  {photoUrls.dpiF ? 'Cambiar Foto Frente' : 'Tomar Foto Frente'}
                 </span>
               </label>
             </div>
@@ -902,7 +916,7 @@ export const ClientDetailView: React.FC<Props> = ({
                   }}
                 />
                 <span className="w-full py-2 px-3 rounded-xl bg-slate-700 hover:bg-slate-800 text-white font-bold text-center block cursor-pointer transition shadow-sm">
-                  {photoUrls.dpiT ? 'Cambiar Foto Reverso' : '📷 Tomar Foto Reverso'}
+                  {photoUrls.dpiT ? 'Cambiar Foto Reverso' : 'Tomar Foto Reverso'}
                 </span>
               </label>
             </div>
@@ -932,7 +946,7 @@ export const ClientDetailView: React.FC<Props> = ({
                   }}
                 />
                 <span className="w-full py-2 px-3 rounded-xl bg-slate-700 hover:bg-slate-800 text-white font-bold text-center block cursor-pointer transition shadow-sm">
-                  {photoUrls.foto ? 'Cambiar Foto Rostro' : '📷 Tomar Foto Rostro'}
+                  {photoUrls.foto ? 'Cambiar Foto Rostro' : 'Tomar Foto Rostro'}
                 </span>
               </label>
             </div>
@@ -944,44 +958,154 @@ export const ClientDetailView: React.FC<Props> = ({
       {activeTab === 'estado' && (
         <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 text-xs">
           {/* Action Toolbar */}
-          <div className="flex items-center justify-between gap-2 flex-wrap border-b border-slate-100 dark:border-slate-800 pb-3">
-            <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100">
-              Estado de Cuenta y Pagaré
-            </h3>
+          <div className="space-y-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div>
+                <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100">
+                  Documentos del Crédito y Pagaré
+                </h3>
+                <p className="text-[11px] text-slate-500">
+                  Generación y descarga de archivos oficiales para la memoria del teléfono
+                </p>
+              </div>
 
-            <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <button
+                  onClick={async () => {
+                    onToast('Generando todos los documentos del cliente...');
+                    await Promise.all([
+                      generateStatementPdf(client),
+                      generateStatementDocx(client),
+                      generateStatementXlsx(client),
+                      generateContractPdf(client),
+                      generateContractDocx(client),
+                    ]);
+                    onToast('Todos los documentos guardados en DOCUMENTOS/');
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-slate-800 dark:bg-slate-100 hover:bg-slate-900 text-white dark:text-slate-900 font-bold flex items-center gap-1.5 shadow-sm transition"
+                  title="Descargar todos los documentos del cliente en PDF, Word y Excel"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Descargar Todos</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Document Format Buttons Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+              {/* Estado PDF */}
               <button
-                onClick={() => {
-                  generateStatementPdf(client);
-                  onToast('Descargando estado de cuenta en PDF...');
+                onClick={async () => {
+                  onToast('Generando Estado de Cuenta en PDF...');
+                  await generateStatementPdf(client);
+                  onToast('Guardado en DOCUMENTOS/Estados_de_Cuenta/');
                 }}
-                className="px-3 py-1.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold flex items-center gap-1.5 transition shadow-sm"
+                className="p-2 rounded-xl bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 text-rose-900 dark:text-rose-200 border border-rose-200 dark:border-rose-900 text-left transition"
               >
-                <FileText className="w-3.5 h-3.5" />
-                <span>Descargar PDF</span>
+                <div className="flex items-center justify-between">
+                  <span className="font-bold">Estado de Cuenta</span>
+                  <span className="text-[10px] font-mono font-bold bg-rose-200 dark:bg-rose-900 px-1 rounded">PDF</span>
+                </div>
+                <span className="text-[10px] text-rose-600 dark:text-rose-400 block mt-0.5">Descargar .pdf</span>
               </button>
 
+              {/* Estado Word */}
               <button
-                onClick={() => {
-                  const text = getStatementPlainText(client);
-                  navigator.clipboard.writeText(text);
-                  setCopiedText(true);
-                  onToast('Texto copiado al portapapeles');
-                  setTimeout(() => setCopiedText(false), 2500);
+                onClick={async () => {
+                  onToast('Generando Estado de Cuenta en Word...');
+                  await generateStatementDocx(client);
+                  onToast('Guardado en DOCUMENTOS/Word/');
                 }}
-                className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-semibold flex items-center gap-1.5 transition"
+                className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 text-blue-900 dark:text-blue-200 border border-blue-200 dark:border-blue-900 text-left transition"
               >
-                {copiedText ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>Copiar texto</span>
+                <div className="flex items-center justify-between">
+                  <span className="font-bold">Estado de Cuenta</span>
+                  <span className="text-[10px] font-mono font-bold bg-blue-200 dark:bg-blue-900 px-1 rounded">WORD</span>
+                </div>
+                <span className="text-[10px] text-blue-600 dark:text-blue-400 block mt-0.5">Descargar .docx</span>
               </button>
 
+              {/* Tabla Excel */}
               <button
-                onClick={() => window.print()}
-                className="p-1.5 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
-                title="Imprimir"
+                onClick={async () => {
+                  onToast('Generando Tabla de Pagos en Excel...');
+                  await generateStatementXlsx(client);
+                  onToast('Guardado en DOCUMENTOS/Excel/');
+                }}
+                className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 text-emerald-900 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-900 text-left transition"
               >
-                <Printer className="w-4 h-4" />
+                <div className="flex items-center justify-between">
+                  <span className="font-bold">Tabla de Pagos</span>
+                  <span className="text-[10px] font-mono font-bold bg-emerald-200 dark:bg-emerald-900 px-1 rounded">EXCEL</span>
+                </div>
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 block mt-0.5">Descargar .xlsx</span>
               </button>
+
+              {/* Contrato Legal PDF */}
+              <button
+                onClick={async () => {
+                  onToast('Generando Contrato y Pagaré Legal...');
+                  await generateContractPdf(client);
+                  onToast('Guardado en DOCUMENTOS/Contratos/');
+                }}
+                className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/50 hover:bg-amber-100 text-amber-900 dark:text-amber-200 border border-amber-200 dark:border-amber-900 text-left transition"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-bold">Contrato Legal</span>
+                  <span className="text-[10px] font-mono font-bold bg-amber-200 dark:bg-amber-900 px-1 rounded">PAGARÉ</span>
+                </div>
+                <span className="text-[10px] text-amber-700 dark:text-amber-400 block mt-0.5">Descargar .pdf</span>
+              </button>
+            </div>
+
+            {/* Print & Share Toolbar */}
+            <div className="flex items-center justify-between gap-1.5 flex-wrap pt-1">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <button
+                  onClick={() => printStatement(client)}
+                  className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold flex items-center gap-1.5 transition"
+                  title="Imprimir estado de cuenta con Android Print"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  <span>Imprimir Estado</span>
+                </button>
+
+                <button
+                  onClick={() => printContract(client)}
+                  className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold flex items-center gap-1.5 transition"
+                  title="Imprimir contrato y pagaré con Android Print"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  <span>Imprimir Contrato</span>
+                </button>
+
+                <button
+                  onClick={async () => {
+                    await generateContractDocx(client);
+                    onToast('Contrato Word guardado en DOCUMENTOS/Word/');
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-semibold flex items-center gap-1.5 transition"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>Contrato Word (.docx)</span>
+                </button>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => {
+                    const text = getStatementPlainText(client);
+                    navigator.clipboard.writeText(text);
+                    setCopiedText(true);
+                    onToast('Texto copiado al portapapeles');
+                    setTimeout(() => setCopiedText(false), 2500);
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-semibold flex items-center gap-1.5 transition"
+                >
+                  {copiedText ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>Copiar texto</span>
+                </button>
+              </div>
             </div>
           </div>
 

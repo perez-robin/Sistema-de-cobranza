@@ -1,6 +1,6 @@
 import React from 'react';
 import { LoanType } from '../types';
-import { Smartphone, Moon, Sun, Search, Plus, Calendar, Clock } from 'lucide-react';
+import { Smartphone, Moon, Sun, Search, Plus, Calendar, Clock, X } from 'lucide-react';
 import { usePWAInstall } from '../hooks/usePWAInstall';
 
 interface Props {
@@ -11,7 +11,6 @@ interface Props {
   searchQuery: string;
   setSearchQuery: (q: string) => void;
   onOpenNewClient: () => void;
-  onOpenInstallGuide: () => void;
   darkMode: boolean;
   setDarkMode: (dark: boolean) => void;
 }
@@ -24,7 +23,6 @@ export const Header: React.FC<Props> = ({
   searchQuery,
   setSearchQuery,
   onOpenNewClient,
-  onOpenInstallGuide,
   darkMode,
   setDarkMode,
 }) => {
@@ -124,9 +122,10 @@ export const Header: React.FC<Props> = ({
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-bold"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              title="Borrar búsqueda"
             >
-              ✕
+              <X className="w-3.5 h-3.5" />
             </button>
           )}
         </div>

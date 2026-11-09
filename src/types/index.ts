@@ -78,3 +78,35 @@ export interface CashClosing {
   n: number;
   pend: number;
 }
+
+export type DocumentFormat = 'pdf' | 'docx' | 'xlsx';
+
+export type StandardFolder =
+  | 'Clientes'
+  | 'Recibos'
+  | 'Cobros_Diarios'
+  | 'Cobros_Semanales'
+  | 'Reportes'
+  | 'Estados_de_Cuenta'
+  | 'Contratos'
+  | 'Comprobantes'
+  | 'Excel'
+  | 'Word'
+  | 'PDF'
+  | 'Respaldos';
+
+export interface AppDocument {
+  id: string;
+  name: string;
+  folder: string;
+  format: DocumentFormat;
+  mimeType: string;
+  size: number;
+  createdAt: string;
+  updatedAt: string;
+  clientId?: string;
+  clientName?: string;
+  description?: string;
+  virtualPath: string; // e.g. "DOCUMENTOS/Recibos/recibo_...pdf"
+  blob?: Blob;
+}

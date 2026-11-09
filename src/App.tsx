@@ -16,8 +16,8 @@ import { ClientDetailView } from './components/ClientDetailView';
 import { CashClosingView } from './components/CashClosingView';
 import { DailyReportView } from './components/DailyReportView';
 import { SettingsView } from './components/SettingsView';
+import { DocumentsView } from './components/DocumentsView';
 import { NewClientModal } from './components/NewClientModal';
-import { InstallGuideModal } from './components/InstallGuideModal';
 import { generateReceiptPdf } from './utils/pdfReceipt';
 import { Plus, Sparkles } from 'lucide-react';
 
@@ -40,9 +40,9 @@ export default function App() {
 
   const [collectorName, setCollectorName] = useState<string>(() => {
     try {
-      return localStorage.getItem(`${STORAGE_KEY}_cob`) || 'Ruta Central';
+      return localStorage.getItem(`${STORAGE_KEY}_cob`) || 'Cobrador Principal';
     } catch {
-      return 'Ruta Central';
+      return 'Cobrador Principal';
     }
   });
 
@@ -57,11 +57,10 @@ export default function App() {
   });
 
   const [mode, setMode] = useState<LoanType>('d');
-  const [activeTab, setActiveTab] = useState<NavTab>('ruta');
+  const [activeTab, setActiveTab] = useState<NavTab>('cobranza');
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isNewClientModalOpen, setIsNewClientModalOpen] = useState(false);
-  const [isInstallGuideOpen, setIsInstallGuideOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const [darkMode, setDarkMode] = useState<boolean>(() => {
@@ -150,8 +149,11 @@ export default function App() {
       firma: collectorName || 'Cobranzas',
     };
 
-    handleUpdateClient({ ...client, rows: newRows });
-    showToast(`✓ Cobrado ${formatQ(client.cuota)} a ${client.nombre || 'cliente'}.`);
+    const updatedClient = { ...client, rows: newRows };
+    handleUpdateClient(updatedClient);
+    showToast(`Cobrado ${formatQ(client.cuota)} a ${client.nombre || 'cliente'}.`);
+    // Automatically archive receipt in DOCUMENTOS/Recibos/
+    generateReceiptPdf(updatedClient, collectorName);
   };
 
   // Undo express payment
@@ -223,7 +225,6 @@ export default function App() {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         onOpenNewClient={() => setIsNewClientModalOpen(true)}
-        onOpenInstallGuide={() => setIsInstallGuideOpen(true)}
         darkMode={darkMode}
         setDarkMode={setDarkMode}
       />
@@ -247,7 +248,7 @@ export default function App() {
           />
         ) : (
           <>
-            {activeTab === 'ruta' && (
+            {activeTab === 'cobranza' && (
               <RouteView
                 clients={clients}
                 mode={mode}
@@ -293,6 +294,10 @@ export default function App() {
               />
             )}
 
+            {activeTab === 'documentos' && (
+              <DocumentsView clients={clients} collectorName={collectorName} onToast={showToast} />
+            )}
+
             {activeTab === 'ajustes' && (
               <SettingsView
                 collectorName={collectorName}
@@ -306,7 +311,6 @@ export default function App() {
                 }}
                 onSeedDemo={handleSeedDemo}
                 onClearAll={handleClearAll}
-                onOpenInstallGuide={() => setIsInstallGuideOpen(true)}
                 onToast={showToast}
               />
             )}
@@ -341,11 +345,6 @@ export default function App() {
         onClose={() => setIsNewClientModalOpen(false)}
         defaultMode={mode}
         onSave={handleCreateClient}
-      />
-
-      <InstallGuideModal
-        isOpen={isInstallGuideOpen}
-        onClose={() => setIsInstallGuideOpen(false)}
       />
 
       {/* Toast Notification */}

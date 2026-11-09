@@ -1,7 +1,7 @@
 import React from 'react';
-import { Home, Users, DollarSign, FileText, Settings } from 'lucide-react';
+import { Home, Users, DollarSign, FileText, Settings, FolderOpen } from 'lucide-react';
 
-export type NavTab = 'ruta' | 'clientes' | 'cierre' | 'reportes' | 'ajustes';
+export type NavTab = 'cobranza' | 'clientes' | 'cierre' | 'reportes' | 'documentos' | 'ajustes';
 
 interface Props {
   activeTab: NavTab;
@@ -11,16 +11,17 @@ interface Props {
 
 export const BottomNav: React.FC<Props> = ({ activeTab, onChangeTab, pendingCount = 0 }) => {
   const tabs = [
-    { id: 'ruta' as NavTab, label: 'Ruta', icon: Home, badge: pendingCount > 0 ? pendingCount : null },
+    { id: 'cobranza' as NavTab, label: 'Cobranza', icon: Home, badge: pendingCount > 0 ? pendingCount : null },
     { id: 'clientes' as NavTab, label: 'Clientes', icon: Users },
     { id: 'cierre' as NavTab, label: 'Cierre', icon: DollarSign },
     { id: 'reportes' as NavTab, label: 'Reportes', icon: FileText },
+    { id: 'documentos' as NavTab, label: 'Documentos', icon: FolderOpen },
     { id: 'ajustes' as NavTab, label: 'Ajustes', icon: Settings },
   ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 pb-safe shadow-lg">
-      <div className="max-w-md mx-auto grid grid-cols-5 h-16">
+      <div className="max-w-md mx-auto grid grid-cols-6 h-16">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;

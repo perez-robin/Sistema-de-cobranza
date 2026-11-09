@@ -23,7 +23,6 @@ interface Props {
   onRestore: (clients: Client[], closings: CashClosing[], collector: string) => void;
   onSeedDemo: () => void;
   onClearAll: () => void;
-  onOpenInstallGuide: () => void;
   onToast: (msg: string) => void;
 }
 
@@ -35,7 +34,6 @@ export const SettingsView: React.FC<Props> = ({
   onRestore,
   onSeedDemo,
   onClearAll,
-  onOpenInstallGuide,
   onToast,
 }) => {
   const [isExporting, setIsExporting] = useState(false);
@@ -97,7 +95,7 @@ export const SettingsView: React.FC<Props> = ({
       } catch {
         // ignore
       }
-      onToast('✅ Respaldo descargado exitosamente. Guárdalo en WhatsApp o Google Drive.');
+      onToast('Respaldo descargado exitosamente. Guárdalo en WhatsApp o Google Drive.');
     } catch (err) {
       console.error(err);
       onToast('Error al generar el respaldo');
@@ -136,7 +134,7 @@ export const SettingsView: React.FC<Props> = ({
         }
 
         onRestore(data.clients, Array.isArray(data.closings) ? data.closings : [], data.collectorName || '');
-        onToast(`✅ Respaldo restaurado con éxito: ${data.clients.length} clientes recuperados.`);
+        onToast(`Respaldo restaurado con éxito: ${data.clients.length} clientes recuperados.`);
       } catch (err) {
         console.error(err);
         onToast('El archivo seleccionado no es un respaldo válido de Tu Crédito.');
@@ -153,18 +151,18 @@ export const SettingsView: React.FC<Props> = ({
       <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
         <div className="flex items-center gap-2 text-slate-800 dark:text-slate-200 font-bold text-sm">
           <User className="w-4 h-4 text-blue-600" />
-          <span>Datos del Cobrador en Ruta</span>
+          <span>Datos del Cobrador</span>
         </div>
 
         <div>
           <label className="block text-slate-600 dark:text-slate-400 font-semibold mb-1">
-            Nombre del cobrador / ruta:
+            Nombre del cobrador / agente:
           </label>
           <input
             type="text"
             value={collectorName}
             onChange={(e) => setCollectorName(e.target.value)}
-            placeholder="Ej. Carlos Mendoza (Ruta 1 - Mixco)"
+            placeholder="Ej. Carlos Mendoza (Agente Central)"
             className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm font-semibold focus:ring-2 focus:ring-blue-600 focus:outline-none"
           />
           <p className="text-[11px] text-slate-400 mt-1">

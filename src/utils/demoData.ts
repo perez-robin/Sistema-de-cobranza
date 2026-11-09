@@ -22,7 +22,7 @@ export function getDemoClients(): Client[] {
       f: subDays(8 - i),
       h: '09:30',
       m: 60,
-      firma: 'Ruta Central',
+      firma: 'Cobrador Principal',
       mp: false,
     };
   }
@@ -31,7 +31,7 @@ export function getDemoClients(): Client[] {
     f: hoy,
     h: '10:15',
     m: 60,
-    firma: 'Ruta Central',
+    firma: 'Cobrador Principal',
     mp: false,
   };
 
@@ -53,9 +53,9 @@ export function getDemoClients(): Client[] {
 
   // 2. Daily loan - Por cobrar hoy (Q500 otorgado, cuota Q30)
   const rows2 = createBlankRows('d');
-  rows2[0] = { f: subDays(3), h: '08:45', m: 30, firma: 'Ruta Central', mp: false };
-  rows2[1] = { f: subDays(2), h: '09:10', m: 30, firma: 'Ruta Central', mp: false };
-  rows2[2] = { f: subDays(1), h: '08:50', m: 30, firma: 'Ruta Central', mp: false };
+  rows2[0] = { f: subDays(3), h: '08:45', m: 30, firma: 'Cobrador Principal', mp: false };
+  rows2[1] = { f: subDays(2), h: '09:10', m: 30, firma: 'Cobrador Principal', mp: false };
+  rows2[2] = { f: subDays(1), h: '08:50', m: 30, firma: 'Cobrador Principal', mp: false };
   // Cuota 4 pendiente para hoy
 
   const client2: Client = {
@@ -76,8 +76,8 @@ export function getDemoClients(): Client[] {
 
   // 3. Daily loan - Con atraso y mora (Q1,500 otorgado, cuota Q90)
   const rows3 = createBlankRows('d');
-  rows3[0] = { f: subDays(9), h: '11:00', m: 90, firma: 'Ruta Central', mp: false };
-  rows3[1] = { f: subDays(8), h: '10:30', m: 90, firma: 'Ruta Central', mp: false };
+  rows3[0] = { f: subDays(9), h: '11:00', m: 90, firma: 'Cobrador Principal', mp: false };
+  rows3[1] = { f: subDays(8), h: '10:30', m: 90, firma: 'Cobrador Principal', mp: false };
   // Missed past 5 days!
 
   const client3: Client = {
@@ -103,7 +103,7 @@ export function getDemoClients(): Client[] {
       f: subDays(16 - i),
       h: '14:20',
       m: 60,
-      firma: 'Ruta Central',
+      firma: 'Cobrador Principal',
       mp: false,
     };
   }
@@ -127,9 +127,9 @@ export function getDemoClients(): Client[] {
 
   // 5. Weekly loan (Cobro Semanal - 6 semanas)
   const rows5 = createBlankRows('s');
-  rows5[0] = { f: subDays(21), h: '15:00', m: 280, firma: 'Ruta Central', mp: false };
-  rows5[1] = { f: subDays(14), h: '15:30', m: 280, firma: 'Ruta Central', mp: false };
-  rows5[2] = { f: subDays(7), h: '16:00', m: 280, firma: 'Ruta Central', mp: false };
+  rows5[0] = { f: subDays(21), h: '15:00', m: 280, firma: 'Cobrador Principal', mp: false };
+  rows5[1] = { f: subDays(14), h: '15:30', m: 280, firma: 'Cobrador Principal', mp: false };
+  rows5[2] = { f: subDays(7), h: '16:00', m: 280, firma: 'Cobrador Principal', mp: false };
   // Week 4 is due today
 
   const client5: Client = {

@@ -75,13 +75,13 @@ export const CashClosingView: React.FC<Props> = ({
   // Formatted text for WhatsApp / report
   const generateClosingText = (): string => {
     const lines = [
-      `*🏛️ TU CRÉDITO · CIERRE DE CAJA ${mode === 's' ? 'SEMANAL' : 'DIARIO'}*`,
-      `📅 Fecha: ${formatDateGt(hoy)} ${currentTimeStr()}`,
-      collectorName ? `👤 Cobrador: ${collectorName}` : '',
+      `*TU CRÉDITO · CIERRE DE CAJA ${mode === 's' ? 'SEMANAL' : 'DIARIO'}*`,
+      `Fecha: ${formatDateGt(hoy)} ${currentTimeStr()}`,
+      collectorName ? `Cobrador: ${collectorName}` : '',
       `--------------------------------`,
-      `💵 *TOTAL COBRADO HOY: ${formatQ(totalCobrado)}*`,
-      `📊 Cobros realizados: ${collectionsToday.length}`,
-      `⚠️ Clientes pendientes: ${uncollectedClients.length}`,
+      `*TOTAL COBRADO HOY: ${formatQ(totalCobrado)}*`,
+      `Cobros realizados: ${collectionsToday.length}`,
+      `Clientes pendientes: ${uncollectedClients.length}`,
       `--------------------------------`,
       `*DETALLE DE COBROS:*`,
     ];

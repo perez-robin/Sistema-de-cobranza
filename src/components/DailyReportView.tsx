@@ -13,7 +13,15 @@ import {
   isoToday,
   sortClientsByRoute,
 } from '../utils/calculations';
-import { FileText, Printer, Calendar, Download, Sheet, Copy, Check } from 'lucide-react';
+import {
+  generateCollectionReportPdf,
+  generateCollectionReportDocx,
+  generateCollectionReportXlsx,
+  generateClientListPdf,
+  generateClientListXlsx,
+} from '../utils/documentGenerators';
+import { printCollectionReport, printClientList } from '../utils/printService';
+import { FileText, Printer, Calendar, Download, Copy, Check, FileSpreadsheet, Share2 } from 'lucide-react';
 
 interface Props {
   clients: Client[];
@@ -32,10 +40,10 @@ export const DailyReportView: React.FC<Props> = ({ clients, mode, collectorName,
 
   const copyReportText = () => {
     const lines = [
-      `*🏛️ TU CRÉDITO · REPORTE DE COBROS*`,
-      `📅 Fecha: ${report.dia.toUpperCase()} ${formatDateGt(report.fecha)}`,
+      `*TU CRÉDITO · REPORTE DE COBROS*`,
+      `Fecha: ${report.dia.toUpperCase()} ${formatDateGt(report.fecha)}`,
       `--------------------------------`,
-      `💵 *TOTAL COBRADO: ${formatQ(report.total)}*`,
+      `*TOTAL COBRADO: ${formatQ(report.total)}*`,
       `• Diarios (${report.countDiario}): ${formatQ(report.totalDiario)}`,
       `• Semanales (${report.countSemanal}): ${formatQ(report.totalSemanal)}`,
       `--------------------------------`,
@@ -61,7 +69,7 @@ export const DailyReportView: React.FC<Props> = ({ clients, mode, collectorName,
             Reportes y Hoja de Cobranza
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Generación de comprobantes oficiales y planillas físicas de ruta
+            Generación de comprobantes oficiales y planillas físicas de cobranza
           </p>
         </div>
 
@@ -75,7 +83,7 @@ export const DailyReportView: React.FC<Props> = ({ clients, mode, collectorName,
                 : 'text-slate-600 dark:text-slate-400'
             }`}
           >
-            📊 Reporte del Día
+            Reporte del Día
           </button>
           <button
             onClick={() => setViewMode('hoja')}
@@ -85,7 +93,7 @@ export const DailyReportView: React.FC<Props> = ({ clients, mode, collectorName,
                 : 'text-slate-600 dark:text-slate-400'
             }`}
           >
-            📋 Hoja de Cobro en Papel
+            Hoja de Cobro en Papel
           </button>
         </div>
       </div>
@@ -108,32 +116,74 @@ export const DailyReportView: React.FC<Props> = ({ clients, mode, collectorName,
               />
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 flex-wrap">
               <button
-                onClick={() => {
-                  generateDailyReportPdf(report);
-                  onToast('Descargando reporte en PDF...');
+                onClick={async () => {
+                  onToast('Generando reporte de cobranza en PDF...');
+                  await generateCollectionReportPdf(clients, mode, selectedDate, collectorName, 'diario');
+                  onToast('Reporte PDF guardado en DOCUMENTOS/');
                 }}
-                className="px-3.5 py-1.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold flex items-center gap-1.5 shadow-sm transition"
+                className="px-3 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/60 hover:bg-rose-100 text-rose-800 dark:text-rose-200 border border-rose-200 dark:border-rose-900 font-bold flex items-center gap-1.5 transition"
+                title="Descargar reporte en formato PDF"
               >
-                <Download className="w-3.5 h-3.5" />
-                <span>Descargar PDF</span>
+                <Download className="w-3.5 h-3.5 text-rose-600" />
+                <span>PDF</span>
+              </button>
+
+              <button
+                onClick={async () => {
+                  onToast('Generando reporte de cobranza en Word...');
+                  await generateCollectionReportDocx(clients, mode, selectedDate, collectorName, 'diario');
+                  onToast('Reporte Word guardado en DOCUMENTOS/Word/');
+                }}
+                className="px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 text-blue-800 dark:text-blue-200 border border-blue-200 dark:border-blue-900 font-bold flex items-center gap-1.5 transition"
+                title="Descargar reporte en formato Word"
+              >
+                <FileText className="w-3.5 h-3.5 text-blue-600" />
+                <span>Word (.docx)</span>
+              </button>
+
+              <button
+                onClick={async () => {
+                  onToast('Generando reporte de cobranza en Excel...');
+                  await generateCollectionReportXlsx(clients, mode, selectedDate, collectorName, 'diario');
+                  onToast('Reporte Excel guardado en DOCUMENTOS/Excel/');
+                }}
+                className="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-900 font-bold flex items-center gap-1.5 transition"
+                title="Descargar reporte en formato Excel"
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Excel (.xlsx)</span>
+              </button>
+
+              <button
+                onClick={() => printCollectionReport(clients, mode, selectedDate, collectorName, 'diario')}
+                className="px-3 py-1.5 rounded-xl bg-slate-800 dark:bg-slate-100 hover:bg-slate-900 text-white dark:text-slate-900 font-bold flex items-center gap-1.5 shadow-sm transition"
+                title="Imprimir reporte oficial con sistema Android Print"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                <span>Imprimir</span>
+              </button>
+
+              <button
+                onClick={async () => {
+                  onToast('Exportando listado completo de clientes a Excel...');
+                  await generateClientListXlsx(clients, mode);
+                  onToast('Cartera de clientes guardada en DOCUMENTOS/Clientes/');
+                }}
+                className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-semibold flex items-center gap-1.5 transition"
+                title="Exportar cartera de clientes a Excel"
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Cartera Excel</span>
               </button>
 
               <button
                 onClick={copyReportText}
-                className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-semibold flex items-center gap-1.5 transition"
-              >
-                {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>Copiar texto</span>
-              </button>
-
-              <button
-                onClick={() => window.print()}
                 className="p-1.5 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
-                title="Imprimir"
+                title="Copiar resumen al portapapeles"
               >
-                <Printer className="w-4 h-4" />
+                {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
               </button>
             </div>
           </div>
@@ -232,7 +282,7 @@ export const DailyReportView: React.FC<Props> = ({ clients, mode, collectorName,
                 Hoja de Cobro en Papel · {mode === 's' ? 'Cobros Semanales' : 'Cobros Diarios'}
               </p>
               <p className="text-slate-500 text-[11px]">
-                Imprime esta planilla antes de salir a la ruta para registrar abonos a mano si se descarga el teléfono.
+                Imprime esta planilla para registrar abonos a mano en caso necesario.
               </p>
             </div>
 
@@ -248,7 +298,7 @@ export const DailyReportView: React.FC<Props> = ({ clients, mode, collectorName,
           <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-x-auto print:border-none print:shadow-none print:p-0">
             <div className="mb-3 border-b pb-2 flex justify-between items-center text-xs">
               <div>
-                <h3 className="text-base font-black text-blue-900">Tu Crédito · Planilla de Cobranza en Ruta</h3>
+                <h3 className="text-base font-black text-blue-900">Tu Crédito · Planilla de Cobranza</h3>
                 <p className="text-slate-600">
                   Fecha: {formatDateGt(isoToday())} · Cobrador: {collectorName || '__________________________'}
                 </p>
