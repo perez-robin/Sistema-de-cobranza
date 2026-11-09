@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tu Crédito · Cobros diarios</title>
+<style>
+:root{--bg:#f3f5f9;--card:#fff;--ink:#1c2433;--mut:#5d6b82;--line:#c9d1de;--blue:#3f6aa3;--yel:#e8b923;--red:#c0392b;--ok:#e6f4ea;--okc:#1e7a3c;--late:#fdecea;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161d;--card:#1b212c;--ink:#e8ecf3;--mut:#9aa7bd;--line:#323c4d;--blue:#7ba3d9;--yel:#e8b923;--red:#ff7b6b;--ok:#17301f;--okc:#6fd18c;--late:#3a1f1d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12161d;--card:#1b212c;--ink:#e8ecf3;--mut:#9aa7bd;--line:#323c4d;--blue:#7ba3d9;--red:#ff7b6b;--ok:#17301f;--okc:#6fd18c;--late:#3a1f1d;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;font-size:15px}
+.wrap{max-width:980px;margin:0 auto;padding:14px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+h1{margin:0;font-size:26px;color:var(--blue);letter-spacing:-.5px;font-weight:800}
+h1 span{color:var(--yel)}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+button,select,input{font:inherit;color:var(--ink)}
+button{background:var(--blue);color:#fff;border:0;border-radius:6px;padding:8px 12px;cursor:pointer;font-weight:600}
+button.sec{background:transparent;color:var(--blue);border:1px solid var(--blue)}
+button.del{background:transparent;color:var(--red);border:1px solid var(--red)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--yel);outline-offset:1px}
+select{padding:8px;border-radius:6px;border:1px solid var(--line);background:var(--card);max-width:100%}
+.modes{display:flex;gap:8px;width:100%}.modes button{flex:1;background:transparent;color:var(--blue);border:2px solid var(--blue);padding:10px}.modes button.on{background:var(--blue);color:#fff}
+.firma{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:48px;align-items:end}.firma .ln{border-top:1px solid var(--ink);padding-top:4px;font-size:13px}.firma .ln span{color:var(--mut)}.firma small{font-size:10px;line-height:1.35;color:var(--mut)}
+.clw{display:flex;gap:8px;align-items:stretch;margin-bottom:8px;border:2px solid var(--line);border-radius:8px;overflow:hidden}.clw .cl{flex:1;margin:0;border:0;border-radius:0;background:transparent}.clw .act{margin:0 8px;align-self:center;white-space:nowrap}.clw .lk{cursor:default}
+.leg{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.lg{padding:2px 9px;border-radius:12px;font-size:12px;border:1px solid var(--line)}
+.clw.v,.lg.v{background:#d7f2de;border-color:#1e7a3c}.clw.a,.lg.a{background:#fff1b8;border-color:#e8b923}.clw.r,.lg.r{background:#fbd0cb;border-color:#c0392b}.clw.c,.lg.c{background:#d4ecfb;border-color:#3f8fd0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .clw.v,:root:not([data-theme="light"]) .lg.v{background:#17301f}:root:not([data-theme="light"]) .clw.a,:root:not([data-theme="light"]) .lg.a{background:#3a3213}:root:not([data-theme="light"]) .clw.r,:root:not([data-theme="light"]) .lg.r{background:#3a1f1d}:root:not([data-theme="light"]) .clw.c,:root:not([data-theme="light"]) .lg.c{background:#12303f}}
+:root[data-theme="dark"] .clw.v,:root[data-theme="dark"] .lg.v{background:#17301f}:root[data-theme="dark"] .clw.a,:root[data-theme="dark"] .lg.a{background:#3a3213}:root[data-theme="dark"] .clw.r,:root[data-theme="dark"] .lg.r{background:#3a1f1d}:root[data-theme="dark"] .clw.c,:root[data-theme="dark"] .lg.c{background:#12303f}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+label{display:block;font-size:13px;color:var(--mut);margin-bottom:3px}
+.grid input,.cob input{width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--bg)}
+.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.sum div{border-left:4px solid var(--blue);padding:4px 10px}
+.sum b{display:block;font-size:22px}
+.sum .saldo{border-color:var(--yel)}
+.sum .mora{border-color:var(--red)}
+.sum .mora b{color:var(--red)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:800px}
+th,td{border:1px solid var(--line);padding:4px 6px;text-align:left;font-size:14px}
+th{background:var(--bg);color:var(--blue)}
+td input{width:100%;border:0;background:transparent;padding:6px 2px}
+td.d{font-weight:700;text-align:center;width:44px}
+tr.paid{background:var(--ok)}
+tr.late{background:var(--late)}
+.mora-c{white-space:nowrap}
+.mora-c.on{color:var(--red);font-weight:700}
+.mora-c input{width:auto;vertical-align:middle}
+.nota{color:var(--red);margin:12px 0 0;font-size:14px}
+.empty{text-align:center;padding:40px 10px;color:var(--mut)}
+.pill{font-size:12px;color:var(--okc);font-weight:700}
+.cap .rn{margin:10px 0 0;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.renov{border:2px solid var(--yel)}
+.renov .grid b{display:block;font-size:20px}
+.renov .grid span{font-size:13px;color:var(--mut)}
+.warn{color:var(--red);margin:8px 0 0}
+.nav{display:flex;gap:8px;flex-wrap:wrap}
+.cl{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;margin-bottom:8px;padding:10px 12px;background:var(--bg);color:var(--ink);border:1px solid var(--line);text-align:left;font-weight:400}
+.cl small{color:var(--mut)}
+.fotos{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:8px}
+.ph img{width:100%;max-height:200px;object-fit:cover;border-radius:6px;margin-bottom:6px;border:1px solid var(--line)}
+.ph button{width:100%}
+.sv{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#toast{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;z-index:20;max-width:90%}
+#est{display:none}
+#est h2{margin:0 0 4px;color:var(--blue)}
+#est .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:4px 16px;margin:10px 0}
+#est .meta span{color:var(--mut)}
+#est .tot{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+#est .tot div{border-left:4px solid var(--blue);padding:2px 10px}
+#est .tot b{display:block;font-size:20px}
+#est .acts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+#est td.r{text-align:right}
+@media print{.bar,.noprint,button{display:none!important}body{background:#fff;color:#000}.card{border-color:#999}#est table{min-width:0}#est th,#est td{font-size:12px;padding:2px 4px}:root{--bg:#fff;--card:#fff;--ink:#000;--mut:#444;--line:#999;--ok:#fff;--late:#fff}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>Tu <span>Crédito</span> · Cobros diarios</h1>
+<div class="bar noprint">
+<select id="sel" aria-label="Cliente"></select>
+<button id="nuevo">Nuevo cliente</button>
+<button id="cierre" class="sec">Cierre de caja</button>
+<button id="reporte" class="sec">Reporte del día</button>
+<button id="resp" class="sec">Respaldo</button>
+<button id="print" class="sec">Estado de cuenta</button>
+<button class="del" data-del="1">Eliminar cliente</button>
+</div>
+<div class="modes noprint" id="modes"></div>
+</header>
+<div id="app"></div>
+<div id="est"></div>
+<div id="toast" role="status"></div>
+</div>
+<script>
+var DIAS=23, MORA=5, GRACIA=3, KEY="tucredito_cobros_v1";
+var clients=[], cur=null, cobrador="", delAsk=false, est=false, tt=null, home=true, modo="d", cierres=[], panel="", pendRest=null, undoAsk=null, saveAsk=null, pdb=null;
+try{clients=JSON.parse(localStorage.getItem(KEY)||"[]");cobrador=localStorage.getItem(KEY+"_cob")||""}catch(e){clients=[]}
+try{cierres=JSON.parse(localStorage.getItem(KEY+"_cierres")||"[]")}catch(e){cierres=[]}
+var l0=lst();cur=l0.length?l0[0].id:null;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(clients));localStorage.setItem(KEY+"_cob",cobrador);localStorage.setItem(KEY+"_cierres",JSON.stringify(cierres))}catch(e){}}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function q(n){return "Q"+(Number(n)||0).toLocaleString("es-GT",{minimumFractionDigits:2,maximumFractionDigits:2})}
+function iso(d){var m=d.getMonth()+1,k=d.getDate();return d.getFullYear()+"-"+(m<10?"0":"")+m+"-"+(k<10?"0":"")+k}
+function tp(c){return c&&c.tipo==="s"?"s":"d"}
+function nd(c){return tp(c)==="s"?6:23}
+function rmin(c){return tp(c)==="s"?5:13}
+function compTxt(c){return "Yo, "+(c.nombre||"__________")+", con DPI "+(c.dpi||"__________")+", me comprometo a pagar la cantidad otorgada de "+q(c.cantidad)+", en "+nd(c)+" pagos "+(tp(c)==="s"?"semanales":"diarios")+" de "+q(c.cuota)+", más la mora que corresponda según la nota de este estado de cuenta."}
+function lst(){return clients.filter(function(c){return tp(c)===modo})}
+function ahora(){var d=new Date(),h=d.getHours(),m=d.getMinutes();return(h<10?"0":"")+h+":"+(m<10?"0":"")+m}
+function fh(t){if(!t)return"";var p=t.split(":"),h=+p[0],x=h>=12?"p. m.":"a. m.";h=h%12||12;return h+":"+p[1]+" "+x}
+function parse(s){var p=s.split("-");return new Date(+p[0],+p[1]-1,+p[2])}
+function diff(a,b){return Math.round((parse(a)-parse(b))/864e5)}
+function fmt(s){if(!s)return"";var p=s.split("-");return p[2]+"/"+p[1]+"/"+p[0]}
+function get(){return clients.find(function(c){return c.id===cur})}
+function blank(t){var r=[];for(var i=0;i<(t==="s"?6:23);i++)r.push({f:"",h:"",m:"",firma:"",mp:false});
+ return{id:"c"+Date.now(),tipo:t==="s"?"s":"d",nombre:"",dpi:"",lugar:"",tel:"",cantidad:"",cuota:"",inicio:iso(new Date()),dom:true,guardado:false,fotos:{},rows:r}}
+function due(c){ // fechas programadas de cobro
+ var out=[],d=parse(c.inicio||iso(new Date()));
+ var N=nd(c),sem=tp(c)==="s";
+ while(out.length<N){ if(sem){out.push(iso(d));d.setDate(d.getDate()+7);continue} if(!(c.dom&&d.getDay()===0))out.push(iso(d)); d.setDate(d.getDate()+1)}
+ return out}
+function calc(c){
+ var dues=due(c),hoy=iso(new Date()),cuota=+c.cuota||0,ab=0,mora=0,moraPag=0,n=0;
+ var st=c.rows.map(function(r,i){
+  var m=+r.m||0; if(m>0){ab+=m;n++}
+  var late=r.f&&m>0? diff(r.f,dues[i])>=GRACIA : (m<=0 && diff(hoy,dues[i])>=GRACIA);
+  if(late){mora+=MORA; if(r.mp)moraPag+=MORA}
+  return{due:dues[i],late:late,paid:m>0}});
+ var total=cuota*nd(c);
+ return{st:st,total:total,ab:ab,saldo:Math.max(total-ab,0),mora:mora,moraPend:mora-moraPag,n:n}}
+function head(){
+ var nD=clients.filter(function(c){return tp(c)==="d"}).length,nS=clients.length-nD;
+ document.getElementById("modes").innerHTML='<button data-modo="d" class="'+(modo==="d"?"on":"")+'">📅 Cobros diarios ('+nD+')</button><button data-modo="s" class="'+(modo==="s"?"on":"")+'">🗓️ Cobros semanales ('+nS+')</button>';
+ document.getElementById("nuevo").textContent=modo==="s"?"Nuevo cliente semanal":"Nuevo cliente diario";
+ var s=document.getElementById("sel");
+ s.innerHTML=lst().length?lst().map(function(c){return'<option value="'+c.id+'"'+(c.id===cur?" selected":"")+'>'+({v:"🟢 ",c:"🔵 ",a:"🟡 ",r:"🔴 "}[semaf(c).cls]||"")+(renovDue(c)?"🔔 ":"")+esc(c.nombre||"Cliente sin nombre")+(c.cerrado?" (renovado)":"")+'</option>'}).join(""):'<option>Sin clientes</option>'}
+function toast(m){var e=document.getElementById("toast");e.textContent=m;e.style.display="block";clearTimeout(tt);tt=setTimeout(function(){e.style.display="none"},3500)}
+function render(){
+ head();
+ if(panel){var A=document.getElementById("app");document.getElementById("est").style.display="none";document.querySelector("header").style.display="";A.style.display="";A.innerHTML=panelHtml();return}
+ var app=document.getElementById("app"),c=get(),E=document.getElementById("est"),on=est&&c;
+ document.querySelector("header").style.display=on?"none":"";
+ E.style.display=on?"block":"none";app.style.display=on?"none":"";
+ if(on){renderEst(c,E);return}
+ if(home&&c){app.innerHTML=homeHtml();return}
+ if(!c){app.innerHTML='<div class="card empty">Aún no hay clientes en esta sección. Toque «Nuevo cliente» para abrir una tarjeta de cobro de '+(modo==="s"?"6 semanas":"23 días")+'.</div>';return}
+ var k=calc(c),h=navHtml()+capHtml()+(delAsk?confirmHtml(c):"")+renovHtml(c,k)+histHtml(c);
+ h+='<div class="card"><div class="grid">'+
+ f("nombre","Nombre","text",c.nombre)+f("dpi","DPI (CUI, 13 dígitos)","text",c.dpi)+f("lugar","Lugar","text",c.lugar)+f("tel","Teléfono","tel",c.tel)+
+ f("cantidad","Cantidad otorgada (Q)","number",c.cantidad)+f("cuota","Cuota diaria (Q)","number",c.cuota)+f("inicio","Fecha de inicio","date",c.inicio)+
+ '</div>'+(tp(c)==="s"?"":'<p class="noprint" style="margin:10px 0 0"><label style="display:inline"><input type="checkbox" id="dom"'+(c.dom?" checked":"")+'> No cobrar los domingos</label></p>')+'<p class="noprint" style="margin:6px 0 0;color:var(--mut);font-size:13px">'+(tp(c)==="s"?"La cuota se calcula sola: Q140 semanales por cada Q500 (Q500 = Q140, Q1,000 = Q280, Q1,500 = Q420). Puede cambiarla a mano.":"La cuota se calcula sola: Q30 diarios por cada Q500 (Q500 = Q30, Q1,000 = Q60, Q1,500 = Q90). Puede cambiarla a mano.")+'</p></div>';
+ h+=fotosHtml(c);h+='<div class="card sum"><div><span>Total a pagar ('+nd(c)+' cuotas)</span><b>'+q(k.total)+'</b></div><div><span>Abonado ('+k.n+' de '+nd(c)+')</span><b>'+q(k.ab)+'</b></div><div class="saldo"><span>Saldo</span><b>'+q(k.saldo)+'</b></div><div class="mora"><span>Mora pendiente</span><b>'+q(k.moraPend)+'</b></div></div>';
+ h+='<div class="card cob noprint"><label>Nombre del cobrador (se anota como firma al cobrar)</label><input id="cobr" value="'+esc(cobrador)+'"></div>';
+ h+='<div class="card"><div class="tw"><table><thead><tr><th>'+(tp(c)==="s"?"Sem.":"Día")+'</th><th>Fecha programada</th><th>Fecha de abono</th><th>Hora</th><th>Cuota</th><th>Firma cobrador</th><th>Mora</th><th class="noprint"></th></tr></thead><tbody>';
+ c.rows.forEach(function(r,i){var s=k.st[i];
+  h+='<tr class="'+(s.paid?"paid":s.late?"late":"")+'"><td class="d">'+(i+1)+'</td><td>'+fmt(s.due)+'</td>'+
+  '<td><input type="date" data-i="'+i+'" data-k="f" value="'+esc(r.f)+'" aria-label="Fecha de abono día '+(i+1)+'"></td>'+
+  '<td><input type="time" data-i="'+i+'" data-k="h" value="'+esc(r.h)+'" aria-label="Hora de abono día '+(i+1)+'"></td>'+
+  '<td><input type="number" step="0.01" min="0" data-i="'+i+'" data-k="m" value="'+esc(r.m)+'" aria-label="Cuota día '+(i+1)+'"></td>'+
+  '<td><input data-i="'+i+'" data-k="firma" value="'+esc(r.firma)+'" aria-label="Firma día '+(i+1)+'"></td>'+
+  '<td class="mora-c'+(s.late?" on":"")+'">'+(s.late?q(MORA)+' <label style="display:inline;font-size:12px"><input type="checkbox" data-i="'+i+'" data-k="mp"'+(r.mp?" checked":"")+'> pagada</label>':"—")+'</td>'+
+  '<td class="noprint">'+(s.paid?'<span class="pill">Pagado</span>':'<button data-cobrar="'+i+'">Cobrar</button>')+'</td></tr>'});
+ h+='</tbody></table></div>'+
+ '<p class="nota">NOTA: A partir del tercer día de atraso se cobran Q5.00 de mora por cada pago retrasado.</p></div>';
+ h+='<p class="noprint"><button class="sec" data-est="1">Ver estado de cuenta</button> <button class="del" data-del="1">Eliminar este cliente</button></p>';
+ h+=saveHtml(c);h+=navHtml();
+ app.innerHTML=h;loadPhotos(c)}
+var FOT=[["dpiF","Foto DPI lado frontal"],["dpiT","Foto DPI lado atrás"],["foto","Foto del cliente"]];
+function idb(){return new Promise(function(res,rej){if(pdb)return res(pdb);try{var r=indexedDB.open("tucredito_fotos",1);r.onupgradeneeded=function(){r.result.createObjectStore("f")};r.onsuccess=function(){pdb=r.result;res(pdb)};r.onerror=function(){rej(r.error)}}catch(e){rej(e)}})}
+function putPh(k,b){return idb().then(function(d){return new Promise(function(res,rej){var t=d.transaction("f","readwrite");t.objectStore("f").put(b,k);t.oncomplete=res;t.onerror=function(){rej(t.error)}})})}
+function getPh(k){return idb().then(function(d){return new Promise(function(res,rej){var r=d.transaction("f","readonly").objectStore("f").get(k);r.onsuccess=function(){res(r.result)};r.onerror=function(){rej(r.error)}})})}
+function delPh(k){return idb().then(function(d){return new Promise(function(res,rej){var t=d.transaction("f","readwrite");t.objectStore("f").delete(k);t.oncomplete=res;t.onerror=function(){rej(t.error)}})})}
+function fotosHtml(c){var f=c.fotos||{};return '<div class="card noprint"><b>Documentos y foto del cliente</b><div class="fotos">'+FOT.map(function(p){return '<div class="ph"><img id="ph-'+p[0]+'" alt="'+p[1]+'" hidden><button class="'+(f[p[0]]?'sec':'')+'" data-cam="'+p[0]+'">📷 '+p[1]+(f[p[0]]?' ✓':'')+'</button></div>'}).join("")+'</div></div>'}
+function loadPhotos(c){FOT.forEach(function(p){var s=p[0];if(!(c.fotos&&c.fotos[s]))return;getPh(c.id+":"+s).then(function(b){if(b){var im=document.getElementById("ph-"+s);if(im){im.onload=function(){URL.revokeObjectURL(im.src)};im.src=URL.createObjectURL(b);im.hidden=false}}}).catch(function(){})})}
+function pickPhoto(slot){var i=document.createElement("input");i.type="file";i.accept="image/*";i.capture=slot==="foto"?"user":"environment";i.onchange=function(){if(i.files&&i.files[0])procPhoto(slot,i.files[0])};i.click()}
+function procPhoto(slot,file){var c=get();if(!c)return;
+ var im=new Image(),u=URL.createObjectURL(file);
+ im.onload=function(){var s=Math.min(1,(slot==="foto"?1000:1600)/Math.max(im.width,im.height)),cv=document.createElement("canvas");cv.width=Math.round(im.width*s);cv.height=Math.round(im.height*s);cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);URL.revokeObjectURL(u);
+  cv.toBlob(function(b){if(!b){toast("No se pudo procesar la foto.");return}
+   putPh(c.id+":"+slot,b).then(function(){c.fotos=c.fotos||{};c.fotos[slot]=true;save();render();toast("Foto guardada en el crédito de "+(c.nombre||"el cliente"));if(slot!=="foto")leerDPI(b,slot,c.id)}).catch(function(){toast("No se pudo guardar la foto en este navegador.")})},"image/jpeg",slot==="foto"?.7:.85)};
+ im.onerror=function(){toast("No se pudo abrir la foto.")};im.src=u}
+function tit(t){return String(t||"").toLowerCase().replace(/\s+/g," ").trim().replace(/(^|\s)(\S)/g,function(m,a,b){return a+b.toUpperCase()})}
+async function leerDPI(blob,slot,cid){
+ try{
+  var sm=window.claude?await window.claude.use("sample"):null;
+  if(!sm){toast("Lectura automática no disponible: escriba el nombre y el DPI.");return}
+  var lim=await sm.limits();
+  if(!lim||!lim.images){toast("Lectura automática no disponible: escriba el nombre y el DPI.");return}
+  toast("Leyendo el DPI…");
+  var d=await sm.json("Esta es una foto de un DPI guatemalteco (Documento Personal de Identificación). Extrae el CUI (13 dígitos; suele verse en grupos como 1234 56789 0101) y el nombre completo de la persona (nombres y apellidos tal como aparecen en el documento). Responde SOLO con JSON, sin texto extra ni comillas invertidas: {\"cui\":\"13 dígitos sin espacios, o vacío si no se lee\",\"nombre\":\"nombre completo, o vacío si no se lee\"}. No inventes datos.",{images:[blob]});
+  var c=clients.find(function(x){return x.id===cid});if(!c)return;
+  var cui=String(d&&d.cui||"").replace(/\D/g,""),nom=tit(d&&d.nombre),got=[];
+  if(cui.length===13){c.dpi=cui.slice(0,4)+" "+cui.slice(4,9)+" "+cui.slice(9);got.push("DPI")}
+  if(nom&&(slot==="dpiF"||!c.nombre)){c.nombre=nom;got.push("nombre")}
+  if(!got.length){toast("No se pudo leer el DPI. Tome la foto más cerca y con buena luz, o escriba los datos.");return}
+  save();render();
+  toast("Se llenó "+got.join(" y ")+" desde el DPI. Verifique que sean correctos."+(cui.length!==13?" El CUI no se leyó completo.":""))
+ }catch(x){toast(x&&x.code==="not_granted"?"Permiso denegado: escriba el nombre y el DPI a mano.":"No se pudo leer el DPI. Escriba los datos a mano.")}
+}
+function saveHtml(c){
+ if(saveAsk===c.id)return '<div class="card noprint" style="border-color:var(--yel);border-width:2px"><b>¿Guardar el cliente '+esc(c.nombre||"sin nombre")+'?</b><p style="margin:10px 0 0"><button data-savey="1">Sí</button> <button class="sec" data-saven="1">No</button></p></div>';
+ return '<div class="card noprint sv"><button data-save="1">Guardar cliente</button><span class="'+(c.guardado===false?'warn':'pill')+'">'+(c.guardado===false?'Sin guardar':'✓ Cliente guardado')+'</span></div>'}
+function navHtml(){return '<div class="card noprint nav"><button class="sec" data-home="1">← Página principal</button><button class="sec" data-prev="1">← Anterior</button><button data-next="1">Siguiente cliente →</button></div>'}
+function semaf(c){
+ if(c.cerrado)return{cls:"n",txt:"Renovado",i:-1};
+ var k=calc(c),hoy=iso(new Date()),i=-1,sem=tp(c)==="s";
+ for(var j=0;j<c.rows.length;j++){if(!(+c.rows[j].m>0)){i=j;break}}
+ if(i<0)return{cls:"v",txt:"Pagado completo",i:-1};
+ var d=diff(hoy,k.st[i].due);
+ if(d<0)return{cls:"v",txt:"Al día",i:i,d:d};
+ if(d<=1)return{cls:"c",txt:d?"1 día de atraso":"Por cobrar hoy",i:i,d:d};
+ if(d===2||(sem&&d===3))return{cls:"a",txt:d+" días de atraso",i:i,d:d};
+ return{cls:"r",txt:d+" días de atraso",i:i,d:d}}
+function sortSem(arr){var o={r:0,a:1,c:2,v:3,n:4};return arr.sort(function(a,b){return o[a.s.cls]-o[b.s.cls]})}
+function homeHtml(){
+ var L=sortSem(lst().map(function(c){return{c:c,s:semaf(c),k:calc(c)}})),cnt={v:0,c:0,a:0,r:0},hoy=iso(new Date());
+ L.forEach(function(x){if(cnt[x.s.cls]!=null)cnt[x.s.cls]++});
+ var h=capHtml()+'<div class="card noprint"><div style="font-weight:700;margin-bottom:8px">Clientes ('+L.length+')</div><div class="leg"><span class="lg v">🟢 Cobrados '+cnt.v+'</span><span class="lg c">🔵 Por cobrar '+cnt.c+'</span><span class="lg a">🟡 2'+(modo==="s"?"-3":"")+' días '+cnt.a+'</span><span class="lg r">🔴 '+(modo==="s"?"4+":"3+")+' días '+cnt.r+'</span></div>';
+ h+=L.map(function(x){var c=x.c,s=x.s,lock=s.cls==="v"&&c.guardado!==false;
+  var info='<span><b>'+(renovDue(c)?"🔔 ":"")+esc(c.nombre||"Cliente sin nombre")+(c.guardado===false?' <small>(sin guardar)</small>':'')+'</b><br><small>'+esc(c.lugar||"Sin lugar")+' · cuota '+x.k.n+' de '+nd(c)+' · '+s.txt+'</small></span><span style="text-align:right">Saldo<br><b>'+q(c.cerrado?0:x.k.saldo)+'</b></span>';
+  var main=lock?'<div class="cl lk">'+info+'</div>':'<button class="cl" data-open="'+c.id+'">'+info+'</button>',act='';
+  if(lock){if(c.rows.some(function(r){return r.f===hoy&&+r.m>0}))act=undoAsk===c.id?'<span class="act">¿Anular? <button class="del" data-undoyes="'+c.id+'">Sí</button> <button class="sec" data-undono="1">No</button></span>':'<span class="act" style="display:flex;gap:6px"><button data-recibo="'+c.id+'">🧾 Recibo</button><button class="del" data-undo="'+c.id+'">Deshacer</button></span>'}
+  else if(!c.cerrado&&s.i>=0)act='<button class="act" data-cobrarcl="'+c.id+'">Cobrar '+q(c.cuota)+'</button>';
+  return '<div class="clw '+s.cls+'">'+main+act+'</div>'}).join("");
+ return h+'</div>'}
+function cobrarCl(id){var c=clients.find(function(x){return x.id===id});if(!c)return;
+ if(!(+c.cuota>0)){toast("Abra al cliente y escriba primero su cuota.");return}
+ var s=semaf(c);if(s.i<0)return;var r=c.rows[s.i];r.f=iso(new Date());r.h=ahora();r.m=c.cuota;r.firma=cobrador||r.firma;
+ save();render();toast("Cobrado "+q(c.cuota)+" a "+(c.nombre||"cliente")+" · "+fh(r.h))}
+function undoCl(id){var c=clients.find(function(x){return x.id===id});if(!c)return;var hoy=iso(new Date()),j=-1;
+ c.rows.forEach(function(r,i){if(r.f===hoy&&+r.m>0)j=i});
+ if(j>=0){var r=c.rows[j];r.f="";r.h="";r.m="";r.firma="";r.mp=false}
+ undoAsk=null;save();render();toast("Cobro anulado")}
+async function recibo(id){
+ var c=clients.find(function(x){return x.id===id});if(!c)return;
+ var J=window.jspdf&&window.jspdf.jsPDF;
+ if(!J){toast("No se pudo cargar el generador de PDF.");return}
+ try{
+  var hoy=iso(new Date()),k=calc(c),pg=[],tot=0,sem=tp(c)==="s";
+  c.rows.forEach(function(r,i){if(r.f===hoy&&+r.m>0){pg.push({i:i+1,h:r.h,m:+r.m});tot+=+r.m}});
+  if(!pg.length){toast("Este cliente no tiene cobros de hoy.");return}
+  var p=new J({unit:"mm",format:"a5"}),M=14,y=18,W=148-2*M,no="R-"+hoy.replace(/-/g,"")+"-"+c.id.replace(/\D/g,"").slice(-4)+"-"+pg[0].i;
+  p.setFont("helvetica","bold");p.setFontSize(20);p.setTextColor(63,106,163);p.text("Tu Crédito",M,y);
+  p.setFontSize(12);p.setTextColor(0);p.text("RECIBO DE PAGO",148-M,y,{align:"right"});
+  y+=6;p.setFont("helvetica","normal");p.setFontSize(9);p.setTextColor(80);p.text("No. "+no,148-M,y,{align:"right"});
+  p.text(fmt(hoy)+" · "+fh(pg[pg.length-1].h||ahora()),M,y);
+  y+=4;p.setDrawColor(63,106,163);p.setLineWidth(.6);p.line(M,y,148-M,y);y+=8;
+  var info=[["Cliente",c.nombre||"-"],["DPI",c.dpi||"-"],["Lugar",c.lugar||"-"],["Tipo de crédito",sem?"Semanal":"Diario"],["Cantidad otorgada",q(c.cantidad)],[sem?"Cuota semanal":"Cuota diaria",q(c.cuota)]];
+  info.forEach(function(r){p.setFont("helvetica","bold");p.setFontSize(10);p.setTextColor(0);p.text(r[0]+":",M,y);p.setFont("helvetica","normal");p.text(String(r[1]).slice(0,40),M+42,y);y+=6.5});
+  y+=3;p.setFillColor(235,240,247);p.rect(M,y,W,7,"F");p.setFont("helvetica","bold");p.setFontSize(9);p.text(sem?"Pago (semana)":"Pago (día)",M+2,y+5);p.text("Hora",M+60,y+5);p.text("Monto",148-M-2,y+5,{align:"right"});y+=7;
+  pg.forEach(function(g){p.setFont("helvetica","normal");p.setDrawColor(200);p.setLineWidth(.2);p.line(M,y+7,148-M,y+7);p.text(g.i+" de "+nd(c),M+2,y+5);p.text(fh(g.h),M+60,y+5);p.text(q(g.m),148-M-2,y+5,{align:"right"});y+=7});
+  y+=6;p.setFillColor(232,244,236);p.rect(M,y,W,14,"F");p.setFont("helvetica","bold");p.setFontSize(11);p.setTextColor(30,122,60);p.text("MONTO RECIBIDO",M+3,y+9);p.setFontSize(16);p.text(q(tot),148-M-3,y+9.5,{align:"right"});y+=22;
+  p.setTextColor(0);p.setFontSize(10);
+  [["Cuotas pagadas",k.n+" de "+nd(c)],["Saldo pendiente",q(k.saldo)]].concat(k.moraPend>0?[["Mora pendiente",q(k.moraPend)]]:[]).forEach(function(r){p.setFont("helvetica","bold");p.text(r[0]+":",M,y);p.setFont("helvetica","normal");p.text(r[1],M+42,y);y+=6.5});
+  y+=14;p.setDrawColor(0);p.setLineWidth(.3);p.line(M,y,M+65,y);p.setFont("helvetica","normal");p.setFontSize(9);p.text("Recibido por: "+(cobrador||pg.length&&c.rows[pg[0].i-1].firma||""),M,y+5);
+  p.setFontSize(8);p.setTextColor(90);p.text("Gracias por su pago.",148-M,y+5,{align:"right"});
+  var name="recibo-"+(c.nombre||"cliente").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")+"-"+hoy+".pdf";
+  var d=window.claude?await window.claude.use("downloads"):null;
+  if(!d){toast("La descarga no está disponible aquí.");return}
+  await d.save({filename:name,data:p.output("arraybuffer")});toast("Recibo guardado. Envíelo al cliente.")
+ }catch(x){if(!x||x.code!=="declined")toast("No se pudo crear el recibo.")}
+}
+function copyTxt(tx){var ok=false;function fb(){var a=document.createElement("textarea");a.value=tx;document.body.appendChild(a);a.select();var r=false;try{r=document.execCommand("copy")}catch(x){}document.body.removeChild(a);toast(r?"Texto copiado":"No se pudo copiar. Use Imprimir.")}
+ try{navigator.clipboard.writeText(tx).then(function(){toast("Texto copiado")},fb);ok=true}catch(x){}if(!ok)fb()}
+function secName(){return modo==="s"?"Semanal":"Diario"}
+function cierreData(){var hoy=iso(new Date()),det=[],pend=[],tot=0;
+ lst().forEach(function(c){c.rows.forEach(function(r,i){if(r.f===hoy&&+r.m>0){det.push({n:c.nombre||"Sin nombre",h:r.h||"",m:+r.m,i:i+1});tot+=+r.m}});
+  var s=semaf(c);if(s.cls==="c"||s.cls==="a"||s.cls==="r")pend.push({n:c.nombre||"Sin nombre",t:s.txt})});
+ det.sort(function(a,b){return a.h<b.h?-1:a.h>b.h?1:0});
+ return{fecha:hoy,hora:ahora(),modo:modo,cobrador:cobrador,total:tot,det:det,pend:pend}}
+function cierreText(){var d=cierreData(),L=["TU CRÉDITO · CIERRE DE CAJA "+secName().toUpperCase(),fmt(d.fecha)+" "+fh(d.hora)+(d.cobrador?" · Cobrador: "+d.cobrador:""),""];
+ d.det.forEach(function(x){L.push((x.h?fh(x.h)+" · ":"")+x.n+" · "+q(x.m))});
+ L.push("","Cobros realizados: "+d.det.length,"TOTAL COBRADO: "+q(d.total),"","Sin cobrar ("+d.pend.length+"):");
+ d.pend.forEach(function(x){L.push("- "+x.n+" ("+x.t+")")});return L.join("\n")}
+function guardarCierre(){var d=cierreData();cierres.unshift({fecha:d.fecha,hora:d.hora,modo:d.modo,cobrador:d.cobrador,total:d.total,n:d.det.length,pend:d.pend.length});cierres=cierres.slice(0,60);save();render();toast("Cierre guardado: "+q(d.total)+". Descargue el respaldo.")}
+function cierreHtml(){var d=cierreData();
+ var h='<div class="card"><div class="noprint" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button data-cierrey="1">Guardar cierre</button><button class="sec" data-bak="1">Descargar respaldo</button><button class="sec" data-cierrecopy="1">Copiar texto</button><button class="sec" data-print="1">Imprimir</button><button class="sec" data-pback="1">Volver</button></div>';
+ h+='<h2 style="margin:0 0 4px;color:var(--blue)">Cierre de caja · '+secName()+'</h2><div>'+fmt(d.fecha)+' · '+fh(d.hora)+(d.cobrador?' · Cobrador: '+esc(d.cobrador):'')+'</div>';
+ h+='<div class="sum" style="margin:12px 0"><div class="saldo"><span>Total cobrado hoy</span><b>'+q(d.total)+'</b></div><div><span>Cobros realizados</span><b>'+d.det.length+'</b></div><div class="mora"><span>Clientes sin cobrar</span><b>'+d.pend.length+'</b></div></div>';
+ h+=d.det.length?'<div class="tw"><table style="min-width:0"><thead><tr><th>Hora</th><th>Cliente</th><th>Pago</th><th>Monto</th></tr></thead><tbody>'+d.det.map(function(x){return '<tr><td>'+fh(x.h)+'</td><td>'+esc(x.n)+'</td><td>'+x.i+'</td><td style="text-align:right">'+q(x.m)+'</td></tr>'}).join("")+'</tbody></table></div>':'<p style="color:var(--mut)">Todavía no hay cobros hoy en esta sección.</p>';
+ if(d.pend.length)h+='<p><b>Sin cobrar:</b></p><div>'+d.pend.map(function(x){return esc(x.n)+' <small style="color:var(--mut)">('+x.t+')</small>'}).join("<br>")+'</div>';
+ var hist=cierres.filter(function(x){return x.modo===modo}).slice(0,8);
+ if(hist.length)h+='<div class="noprint" style="margin-top:14px"><b>Cierres anteriores</b><br>'+hist.map(function(x){return fmt(x.fecha)+' '+fh(x.hora)+' · '+q(x.total)+' · '+x.n+' cobros'}).join("<br>")+'</div>';
+ return h+'</div>'}
+function blob2url(b){return new Promise(function(res){var fr=new FileReader();fr.onload=function(){res(fr.result)};fr.onerror=function(){res(null)};fr.readAsDataURL(b)})}
+function url2blob(u){var p=String(u).split(","),m=/:(.*?);/.exec(p[0]),bs=atob(p[1]),a=new Uint8Array(bs.length);for(var i=0;i<bs.length;i++)a[i]=bs.charCodeAt(i);return new Blob([a],{type:m?m[1]:"image/jpeg"})}
+async function bak(){
+ try{
+  var d=window.claude?await window.claude.use("downloads"):null;
+  if(!d){toast("La descarga no está disponible aquí. Use la hoja de cobro como alternativa.");return}
+  toast("Preparando respaldo…");
+  var fotos={};
+  for(var i=0;i<clients.length;i++){var c=clients[i];for(var j=0;j<FOT.length;j++){var sl=FOT[j][0];if(c.fotos&&c.fotos[sl]){try{var b=await getPh(c.id+":"+sl);if(b)fotos[c.id+":"+sl]=await blob2url(b)}catch(e){}}}}
+  await d.save({filename:"respaldo-tucredito-"+iso(new Date())+".json",data:JSON.stringify({app:"tucredito",v:1,fecha:iso(new Date()),hora:ahora(),clients:clients,cobrador:cobrador,cierres:cierres,fotos:fotos})});
+  try{localStorage.setItem(KEY+"_lastbak",fmt(iso(new Date()))+" "+fh(ahora()))}catch(e){}
+  toast("Respaldo guardado");render()
+ }catch(x){if(!x||x.code!=="declined")toast("No se pudo crear el respaldo.")}}
+function pickRest(){var i=document.createElement("input");i.type="file";i.accept=".json,application/json,text/plain";
+ i.onchange=function(){var f=i.files&&i.files[0];if(!f)return;var fr=new FileReader();
+  fr.onload=function(){try{var o=JSON.parse(fr.result);if(!o||!Array.isArray(o.clients)||!o.clients.every(function(c){return c&&c.id&&Array.isArray(c.rows)}))throw 1;pendRest=o;render()}catch(e){toast("Ese archivo no es un respaldo válido.")}};
+  fr.onerror=function(){toast("No se pudo leer el archivo.")};fr.readAsText(f)};i.click()}
+async function doRest(){var o=pendRest;if(!o)return;
+ try{clients=o.clients;cobrador=o.cobrador||"";cierres=Array.isArray(o.cierres)?o.cierres:[];
+  var ks=Object.keys(o.fotos||{});for(var i=0;i<ks.length;i++){try{await putPh(ks[i],url2blob(o.fotos[ks[i]]))}catch(e){}}
+  save();pendRest=null;panel="";home=true;modo="d";var l=lst();cur=l.length?l[0].id:null;render();toast("Respaldo restaurado: "+clients.length+" clientes")
+ }catch(e){toast("No se pudo restaurar el respaldo.")}}
+function listText(){var hoy=fmt(iso(new Date())),L=["TU CRÉDITO · LISTA DE COBRO "+secName().toUpperCase(),hoy,""];
+ sortSem(lst().filter(function(c){return !c.cerrado}).map(function(c){return{c:c,s:semaf(c),k:calc(c)}})).forEach(function(x){L.push((x.s.cls==="v"?"[COBRADO] ":"")+(x.c.nombre||"Sin nombre")+" · "+(x.c.lugar||"-")+" · Tel "+(x.c.tel||"-")+" · Cuota "+q(x.c.cuota)+" · Saldo "+q(x.k.saldo)+" · "+x.s.txt)});return L.join("\n")}
+function hojaHtml(){
+ var L=sortSem(lst().filter(function(c){return !c.cerrado}).map(function(c){return{c:c,s:semaf(c),k:calc(c)}}));
+ return '<div class="card"><div class="noprint" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button data-print="1">Imprimir</button><button class="sec" data-pres="1">Volver</button></div><h2 style="margin:0 0 4px;color:var(--blue)">Hoja de cobro · '+secName()+'</h2><div>'+fmt(iso(new Date()))+' · Cobrador: '+esc(cobrador||"____________________")+'</div><div class="tw" style="margin-top:10px"><table style="min-width:0"><thead><tr><th>Cliente</th><th>Lugar / Tel.</th><th>Cuota</th><th>Saldo</th><th>Estado</th><th>Cobrado Q</th><th>Hora</th><th>Firma</th></tr></thead><tbody>'+L.map(function(x){var c=x.c;return '<tr style="height:40px"><td>'+esc(c.nombre||"Sin nombre")+'</td><td>'+esc(c.lugar||"-")+'<br>'+esc(c.tel||"")+'</td><td>'+q(c.cuota)+'</td><td>'+q(x.k.saldo)+'</td><td>'+x.s.txt+'</td><td></td><td></td><td></td></tr>'}).join("")+'</tbody></table></div></div>'}
+function respHtml(){var last="";try{last=localStorage.getItem(KEY+"_lastbak")||""}catch(e){}
+ var h='<div class="card noprint"><button class="sec" data-pback="1">← Volver</button></div>';
+ if(pendRest)h+='<div class="card noprint" style="border:2px solid var(--red)"><b>Respaldo del '+esc(pendRest.fecha||"?")+' con '+pendRest.clients.length+' clientes.</b> Al restaurar se reemplazan todos los datos actuales.<p style="margin:10px 0 0"><button class="del" data-restyes="1">Sí, restaurar</button> <button class="sec" data-restno="1">Cancelar</button></p></div>';
+ h+='<div class="card noprint"><h2 style="margin:0 0 6px;color:var(--blue)">Respaldo de datos</h2><p style="margin:0 0 10px;color:var(--mut)">Guarda clientes, cobros, cierres y fotos en un archivo. Descárguelo al terminar de cobrar y guárdelo en otro lugar (WhatsApp, correo o Drive).</p><p style="margin:0 0 10px">Último respaldo: <b>'+(last?esc(last):"nunca")+'</b></p><div style="display:flex;gap:8px;flex-wrap:wrap"><button data-bak="1">Descargar respaldo</button><button class="sec" data-rest="1">Restaurar desde archivo</button></div></div>';
+ h+='<div class="card noprint"><h2 style="margin:0 0 6px;color:var(--blue)">Si la app falla: cobro en papel ('+secName()+')</h2><p style="margin:0 0 10px;color:var(--mut)">Imprima la hoja de cobro con sus clientes, o copie la lista para enviarla por WhatsApp.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button data-hoja="1">Hoja de cobro para imprimir</button><button class="sec" data-copylist="1">Copiar lista de cobro</button></div></div>';
+ return h}
+var repF="";
+function dnom(s){return["domingo","lunes","martes","miércoles","jueves","viernes","sábado"][parse(s).getDay()]}
+function repData(){var f=repF||iso(new Date()),det=[],tot=0,tD=0,tS=0,nD=0,nS=0;
+ clients.forEach(function(c){var rs=c.rows.map(function(r,i){return{r:r,i:i}});
+  (c.hist||[]).forEach(function(h){(h.rows||[]).forEach(function(r,i){rs.push({r:r,i:i})})});
+  rs.forEach(function(x){var r=x.r;if(r.f===f&&+r.m>0){var sm=tp(c)==="s";
+   det.push({n:c.nombre||"Sin nombre",t:sm?"Semanal":"Diario",h:r.h||"",m:+r.m,i:x.i+1,nn:nd(c),cb:r.firma||""});
+   tot+=+r.m;if(sm){tS+=+r.m;nS++}else{tD+=+r.m;nD++}}})});
+ det.sort(function(a,b){return a.h<b.h?-1:a.h>b.h?1:0});
+ return{fecha:f,dia:dnom(f),det:det,total:tot,tD:tD,tS:tS,nD:nD,nS:nS}}
+function repText(){var d=repData(),L=["TU CRÉDITO · REPORTE DE COBROS DEL DÍA",d.dia.toUpperCase()+" "+fmt(d.fecha),""];
+ d.det.forEach(function(x){L.push(fh(x.h)+" · "+x.n+" · "+x.t+" · pago "+x.i+" de "+x.nn+" · "+q(x.m)+(x.cb?" · "+x.cb:""))});
+ L.push("","Cobros realizados: "+d.det.length,"Diarios: "+d.nD+" · "+q(d.tD),"Semanales: "+d.nS+" · "+q(d.tS),"TOTAL COBRADO: "+q(d.total));return L.join("\n")}
+async function dlRep(){
+ var J=window.jspdf&&window.jspdf.jsPDF;
+ if(!J){toast("No se pudo cargar el generador de PDF. Use Imprimir y elija «Guardar como PDF».");return}
+ try{
+  var d=repData(),p=new J({unit:"mm",format:"a4"}),M=15,y=18,W=[21,21,19,44,16,17,22,20],H=["Fecha","Día","Hora","Cliente","Tipo","Pago","Cantidad","Cobrador"];
+  p.setFont("helvetica","bold");p.setFontSize(18);p.setTextColor(63,106,163);p.text("Tu Crédito · Reporte de cobros del día",M,y);
+  y+=7;p.setFont("helvetica","normal");p.setFontSize(11);p.setTextColor(0);p.text(d.dia.charAt(0).toUpperCase()+d.dia.slice(1)+" · "+fmt(d.fecha),M,y);
+  y+=5;p.setFontSize(9);p.setTextColor(90);p.text("Generado el "+fmt(iso(new Date()))+" · "+fh(ahora()),M,y);
+  y+=10;p.setTextColor(0);
+  [["Total cobrado",q(d.total)],["Cobros realizados",String(d.det.length)],["Diarios ("+d.nD+")",q(d.tD)],["Semanales ("+d.nS+")",q(d.tS)]].forEach(function(b,i){var x=M+i*45;
+   p.setDrawColor(63,106,163);p.setLineWidth(.8);p.line(x,y-4,x,y+7);
+   p.setFont("helvetica","normal");p.setFontSize(8);p.setTextColor(90);p.text(b[0],x+2,y-1);
+   p.setFont("helvetica","bold");p.setFontSize(13);p.setTextColor(0);p.text(b[1],x+2,y+5)});
+  y+=16;
+  function row(v,hh,head,bold){var x=M;p.setDrawColor(150);p.setLineWidth(.2);
+   if(head){p.setFillColor(235,240,247);p.rect(M,y,180,hh,"F")}
+   v.forEach(function(t,j){p.rect(x,y,W[j],hh);p.setFont("helvetica",head||bold?"bold":"normal");p.setFontSize(9);p.setTextColor(0);
+    p.text(String(t),j===6&&!head?x+W[j]-1.5:x+1.5,y+hh-2,{maxWidth:W[j]-3,align:j===6&&!head?"right":"left"});x+=W[j]});y+=hh}
+  if(!d.det.length){p.setFont("helvetica","normal");p.setFontSize(11);p.text("No hay cobros registrados en esta fecha.",M,y)}
+  else{
+   row(H,7,true);
+   d.det.forEach(function(x){if(y>272){p.addPage();y=20;row(H,7,true)}
+    row([fmt(d.fecha),d.dia,fh(x.h),String(x.n).slice(0,26),x.t,x.i+" de "+x.nn,q(x.m),String(x.cb).slice(0,12)],7,false)});
+   if(y>272){p.addPage();y=20}
+   p.setFillColor(232,244,236);p.rect(M,y,180,8,"F");p.rect(M,y,180,8);p.setFont("helvetica","bold");p.setFontSize(10);p.setTextColor(30,122,60);
+   p.text("TOTAL COBRADO",M+2,y+5.5);p.text(q(d.total),M+180-2,y+5.5,{align:"right"})}
+  var name="reporte-cobros-"+d.fecha+".pdf",dd=window.claude?await window.claude.use("downloads"):null;
+  if(dd){await dd.save({filename:name,data:p.output("arraybuffer")})}else{p.save(name)}
+  toast("PDF guardado")
+ }catch(x){if(!x||x.code!=="declined")toast("No se pudo crear el PDF. Use Imprimir y elija «Guardar como PDF».")}
+}
+function repHtml(){var d=repData();
+ var h='<div class="card"><div class="noprint" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px"><button data-repdl="1">Descargar PDF</button><button class="sec" data-print="1">Imprimir</button><button class="sec" data-repcopy="1">Copiar texto</button><button class="sec" data-pback="1">Volver</button><span style="margin-left:auto"><label style="display:inline">Fecha del reporte:</label> <input type="date" id="repf" value="'+esc(d.fecha)+'" style="padding:6px;border:1px solid var(--line);border-radius:6px;background:var(--bg)"></span></div>';
+ h+='<h2 style="margin:0 0 4px;color:var(--blue)">Reporte de cobros del día</h2><div>'+d.dia.charAt(0).toUpperCase()+d.dia.slice(1)+' · '+fmt(d.fecha)+'</div>';
+ h+='<div class="sum" style="margin:12px 0"><div class="saldo"><span>Total cobrado</span><b>'+q(d.total)+'</b></div><div><span>Cobros realizados</span><b>'+d.det.length+'</b></div><div><span>Diarios ('+d.nD+')</span><b>'+q(d.tD)+'</b></div><div><span>Semanales ('+d.nS+')</span><b>'+q(d.tS)+'</b></div></div>';
+ h+=d.det.length?'<div class="tw"><table style="min-width:0"><thead><tr><th>Fecha</th><th>Día</th><th>Hora</th><th>Cliente</th><th>Tipo</th><th>Pago</th><th>Cantidad</th><th>Cobrador</th></tr></thead><tbody>'+d.det.map(function(x){return '<tr><td>'+fmt(d.fecha)+'</td><td>'+d.dia+'</td><td>'+fh(x.h)+'</td><td>'+esc(x.n)+'</td><td>'+x.t+'</td><td>'+x.i+' de '+x.nn+'</td><td style="text-align:right">'+q(x.m)+'</td><td>'+esc(x.cb)+'</td></tr>'}).join("")+'<tr><td colspan="6" style="text-align:right"><b>TOTAL</b></td><td style="text-align:right"><b>'+q(d.total)+'</b></td><td></td></tr></tbody></table></div>':'<p style="color:var(--mut)">No hay cobros registrados en esta fecha.</p>';
+ return h+'</div>'}
+function panelHtml(){return panel==="reporte"?repHtml():panel==="cierre"?cierreHtml():panel==="hoja"?hojaHtml():respHtml()}
+function cuotaDe(m,c){return Math.round((+m||0)/500*(tp(c)==="s"?140:30)*100)/100}
+function histHtml(c){if(!c.hist||!c.hist.length)return "";return '<div class="card noprint"><b>Créditos anteriores de este cliente</b>'+c.hist.map(function(x){return '<div>'+fmt(x.ini)+' al '+fmt(x.fin)+' · crédito '+q(x.cant)+' · cobrado '+q(x.ab)+'</div>'}).join("")+'</div>'}
+function renovDue(c){return !c.cerrado&&calc(c).n>=rmin(c)}
+function capHtml(){
+ var t={ent:0,cob:0,por:0,mor:0,act:0},ren=[];
+ lst().forEach(function(c){var k=calc(c);t.ent+=(c.efectivo!=null?+c.efectivo:+c.cantidad)||0;t.cob+=k.ab;t.mor+=k.moraPend;(c.hist||[]).forEach(function(h){t.ent+=h.ef;t.cob+=h.ab;t.mor+=h.mora});if(!c.cerrado){t.act++;t.por+=k.saldo;if(k.n>=rmin(c))ren.push(c)}});
+ var h='<div class="card cap noprint"><div style="font-weight:700;margin-bottom:8px">Capital total ('+(modo==="s"?"cobros semanales":"cobros diarios")+')</div><div class="sum"><div class="saldo"><span>Capital por cobrar</span><b>'+q(t.por)+'</b></div><div><span>Efectivo entregado</span><b>'+q(t.ent)+'</b></div><div><span>Total cobrado</span><b>'+q(t.cob)+'</b></div><div class="mora"><span>Mora pendiente</span><b>'+q(t.mor)+'</b></div><div><span>Clientes activos</span><b>'+t.act+'</b></div></div>';
+ if(ren.length)h+='<p class="rn">🔔 Para renovar: '+ren.map(function(c){var kk=calc(c),nv=(+c.renov>0?+c.renov:+c.cantidad)||0;return '<button class="sec" data-go="'+c.id+'">'+esc(c.nombre||"Sin nombre")+' · libre '+q(Math.max(nv-kk.saldo,0))+'</button>'}).join(" ")+'</p>';
+ return h+'</div>'}
+function renovHtml(c,k){
+ if(c.cerrado)return '<div class="card noprint">Este crédito ya fue renovado: su saldo se liquidó con el nuevo crédito.</div>';
+ if(k.n<rmin(c))return "";
+ var nuevo=+c.renov>0?+c.renov:(+c.cantidad||0),ef=nuevo-k.saldo;
+ return '<div class="card noprint renov"><b>🔔 Renovación: el cliente ya pagó '+k.n+' cuotas.</b><div class="grid" style="margin-top:8px"><div><label>Nuevo crédito (Q)</label><input type="number" step="0.01" min="0" data-f="renov" value="'+esc(c.renov!=null&&c.renov!==""?c.renov:c.cantidad)+'"></div><div><span>Saldo pendiente que se descuenta</span><b>'+q(k.saldo)+'</b></div><div><span>Libre para el cliente (efectivo a entregar)</span><b>'+q(Math.max(ef,0))+'</b></div></div>'+(ef<0?'<p class="warn">El nuevo crédito no alcanza a cubrir el saldo pendiente.</p>':'')+'<p style="margin:10px 0 0"><button data-renovar="1">Renovar crédito</button></p></div>'}
+function confirmHtml(c){return '<div class="card noprint" style="border-color:var(--red)"><b>¿Eliminar a '+esc(c.nombre||"este cliente")+'?</b> Se borrarán todos sus cobros y no se puede deshacer.<p style="margin:10px 0 0"><button class="del" data-delyes="1">Sí, eliminar</button> <button class="sec" data-delno="1">Cancelar</button></p></div>'}
+async function dlHtml(c){
+ var E=document.getElementById("est"),card=E.querySelector(".card");if(!card)return;
+ var cl=card.cloneNode(true),a=cl.querySelector(".acts");if(a)a.remove();
+ var inner=cl.innerHTML.split("var(--red)").join("#c0392b");
+ var css="body{font-family:Arial,sans-serif;margin:20px;color:#000}h2{color:#3f6aa3;margin:0 0 4px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #999;padding:3px 5px;font-size:12px;text-align:left}.meta{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;margin:10px 0}.meta span{color:#555}.tot{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0}.tot div{border-left:4px solid #3f6aa3;padding:2px 10px}.tot b{display:block;font-size:18px}.nota{color:#c0392b;font-size:13px}.r{text-align:right}.d{text-align:center}button{padding:8px 14px;margin-bottom:12px}@media print{.np{display:none}}";
+ var doc='<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Estado de cuenta</title><style>'+css+'</style></head><body><button class="np" onclick="window.print()">Imprimir</button>'+inner+'</body></html>';
+ var name="estado-de-cuenta-"+(c.nombre||"cliente").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")+".html";
+ try{
+  var d=window.claude?await window.claude.use("downloads"):null;
+  if(!d){toast("La descarga no está disponible aquí. Use «Copiar texto».");return}
+  await d.save({filename:name,data:doc});toast("Archivo guardado. Ábralo y toque Imprimir.")
+ }catch(x){if(!x||x.code!=="declined")toast("No se pudo descargar. Use «Copiar texto».")}
+}
+async function dl(c){
+ var J=window.jspdf&&window.jspdf.jsPDF;
+ if(!J){toast("No se pudo cargar el generador de PDF. Use «Copiar texto».");return}
+ try{
+ var k=calc(c),p=new J({unit:"mm",format:"a4"}),M=15,y=18;
+ p.setFont("helvetica","bold");p.setFontSize(18);p.setTextColor(63,106,163);p.text("Tu Crédito · Estado de cuenta",M,y);
+ y+=6;p.setFont("helvetica","normal");p.setFontSize(10);p.setTextColor(60);p.text("Emitido el "+fmt(iso(new Date())),M,y);
+ y+=9;p.setTextColor(0);
+ var info=[["Cliente",c.nombre||"-"],["DPI",c.dpi||"-"],["Lugar",c.lugar||"-"],["Teléfono",c.tel||"-"],["Fecha de inicio",fmt(c.inicio)],["Cantidad otorgada",q(c.cantidad)],["Cuota diaria",q(c.cuota)]];
+ info.forEach(function(r,i){var x=M+(i%2)*95,yy=y+Math.floor(i/2)*6;p.setFont("helvetica","bold");p.text(r[0]+":",x,yy);p.setFont("helvetica","normal");p.text(String(r[1]).slice(0,30),x+36,yy)});
+ y+=24;
+ var tot=[["Total a pagar",q(k.total),0],["Abonado ("+k.n+" de "+nd(c)+")",q(k.ab),0],["Saldo",q(k.saldo),0],["Mora pendiente",q(k.moraPend),1]];
+ tot.forEach(function(b,i){var x=M+i*45;p.setDrawColor(63,106,163);p.setLineWidth(.8);p.line(x,y-4,x,y+7);
+  p.setFont("helvetica","normal");p.setFontSize(8);p.setTextColor(90);p.text(b[0],x+2,y-1);
+  p.setFont("helvetica","bold");p.setFontSize(13);if(b[2])p.setTextColor(192,57,43);else p.setTextColor(0);p.text(b[1],x+2,y+5)});
+ y+=15;
+ var W=[9,22,22,17,22,36,27,25],H=[tp(c)==="s"?"Sem.":"Día","Programada","F. abono","Hora","Cuota","Firma cobrador","Mora","Estado"];
+ function row(vals,hh,head,red){var x=M;p.setDrawColor(150);p.setLineWidth(.2);
+  if(head){p.setFillColor(235,240,247);p.rect(M,y,180,hh,"F")}
+  vals.forEach(function(v,j){p.rect(x,y,W[j],hh);p.setFont("helvetica",head?"bold":"normal");p.setFontSize(9);
+   if(red&&(j===6||j===7))p.setTextColor(192,57,43);else p.setTextColor(0);
+   p.text(String(v),x+1.5,y+hh-2,{maxWidth:W[j]-3});x+=W[j]});y+=hh}
+ row(H,7,true,false);
+ c.rows.forEach(function(r,i){var s=k.st[i];
+  row([i+1,fmt(s.due),fmt(r.f),s.paid?fh(r.h):"",s.paid?q(r.m):"",String(r.firma||"").slice(0,24),s.late?q(MORA)+(r.mp?" pagada":" pend."):"-",s.paid?"Pagado":s.late?"Atrasado":"Pendiente"],6.4,false,s.late)});
+ y+=8;p.setFont("helvetica","normal");p.setFontSize(9);p.setTextColor(192,57,43);
+ p.text("NOTA: A partir del tercer día de atraso se cobran Q5.00 de mora por cada pago retrasado.",M,y);
+ if(y>248){p.addPage();y=20}
+ y+=30;p.setDrawColor(0);p.setLineWidth(.3);p.line(M,y,M+80,y);p.setFont("helvetica","bold");p.setFontSize(10);p.setTextColor(0);p.text(String(c.nombre||""),M,y+5,{maxWidth:80});
+ p.setFont("helvetica","normal");p.setFontSize(9);p.text("DPI: "+(c.dpi||""),M,y+10);p.text("Firma del cliente",M,y+15);
+ p.setFontSize(7);p.setTextColor(80);p.text(p.splitTextToSize(compTxt(c),90),M+90,y-6);
+ var name="estado-de-cuenta-"+(c.nombre||"cliente").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")+".pdf";
+ var d=window.claude?await window.claude.use("downloads"):null;
+ if(!d){toast("La descarga no está disponible aquí. Use «Copiar texto».");return}
+ await d.save({filename:name,data:p.output("arraybuffer")});toast("PDF guardado")
+ }catch(x){if(!x||x.code!=="declined")toast("No se pudo crear el PDF. Use «Copiar texto».")}
+}
+function estText(c,k){
+ var L=["TU CRÉDITO · ESTADO DE CUENTA","Fecha: "+fmt(iso(new Date())),"","Cliente: "+(c.nombre||"-"),"DPI: "+(c.dpi||"-"),"Lugar: "+(c.lugar||"-"),"Teléfono: "+(c.tel||"-"),"Cantidad otorgada: "+q(c.cantidad),"Cuota diaria: "+q(c.cuota),"Inicio: "+fmt(c.inicio),""];
+ c.rows.forEach(function(r,i){var s=k.st[i];if(s.paid)L.push("Día "+(i+1)+" · "+fmt(r.f)+(r.h?" "+fh(r.h):"")+" · "+q(r.m)+(s.late?" · mora "+q(MORA)+(r.mp?" (pagada)":" (pendiente)"):""))});
+ L.push("","Cuotas pagadas: "+k.n+" de "+nd(c),"Total abonado: "+q(k.ab),"SALDO: "+q(k.saldo),"Mora pendiente: "+q(k.moraPend),"","","______________________________",c.nombre||"","DPI: "+(c.dpi||""),"Firma del cliente","",compTxt(c));
+ return L.join("\n")}
+function renderEst(c,E){
+ var k=calc(c),h='<div class="card"><div class="acts noprint"><button data-dl="1">Descargar PDF</button><button class="sec" data-print="1">Imprimir</button><button class="sec" data-copy="1">Copiar texto</button><button class="sec" data-back="1">Volver</button><button class="sec" data-home="1">Página principal</button></div>';
+ h+='<h2>Tu Crédito · Estado de cuenta</h2><div>Emitido el '+fmt(iso(new Date()))+'</div><div class="meta"><div><span>Cliente:</span> '+esc(c.nombre||"-")+'</div><div><span>DPI:</span> '+esc(c.dpi||"-")+'</div><div><span>Lugar:</span> '+esc(c.lugar||"-")+'</div><div><span>Teléfono:</span> '+esc(c.tel||"-")+'</div><div><span>Fecha de inicio:</span> '+fmt(c.inicio)+'</div><div><span>Cantidad otorgada:</span> '+q(c.cantidad)+'</div><div><span>Cuota diaria:</span> '+q(c.cuota)+'</div></div>';
+ h+='<div class="tot"><div><span>Total a pagar</span><b>'+q(k.total)+'</b></div><div><span>Abonado ('+k.n+' de '+nd(c)+')</span><b>'+q(k.ab)+'</b></div><div><span>Saldo</span><b>'+q(k.saldo)+'</b></div><div><span>Mora pendiente</span><b style="color:var(--red)">'+q(k.moraPend)+'</b></div></div>';
+ h+='<div class="tw"><table><thead><tr><th>'+(tp(c)==="s"?"Sem.":"Día")+'</th><th>Programada</th><th>Fecha abono</th><th>Hora</th><th>Cuota</th><th>Firma cobrador</th><th>Mora</th><th>Estado</th></tr></thead><tbody>';
+ c.rows.forEach(function(r,i){var s=k.st[i];
+  h+='<tr><td class="d">'+(i+1)+'</td><td>'+fmt(s.due)+'</td><td>'+fmt(r.f)+'</td><td>'+(s.paid?fh(r.h):"")+'</td><td class="r">'+(s.paid?q(r.m):"")+'</td><td>'+esc(r.firma)+'</td><td>'+(s.late?q(MORA)+(r.mp?" pagada":" pendiente"):"—")+'</td><td>'+(s.paid?"Pagado":s.late?"Atrasado":"Pendiente")+'</td></tr>'});
+ h+='</tbody></table></div><p class="nota">NOTA: A partir del tercer día de atraso se cobran Q5.00 de mora por cada pago retrasado.</p><div class="firma"><div class="ln"><b>'+esc(c.nombre||" ")+'</b><br><span>DPI:</span> '+esc(c.dpi||" ")+'<br><span>Firma del cliente</span></div><small>'+esc(compTxt(c))+'</small></div></div>';
+ E.innerHTML=h}
+function f(k,l,t,v){return'<div><label>'+l+'</label><input data-f="'+k+'" type="'+t+'"'+(t==="number"?' step="0.01" min="0"':"")+' value="'+esc(v)+'"></div>'}
+document.addEventListener("change",function(e){
+ var t=e.target,c=get();
+ if(t.id==="repf"){repF=t.value||"";render();return}
+ if(t.id==="sel"){panel="";cur=t.value;est=false;home=false;delAsk=false;render();return}
+ if(!c&&t.id!=="cobr")return;
+ if(t.id==="cobr"){cobrador=t.value;save();return}
+ if(t.id==="dom"){c.dom=t.checked}
+ else if(t.dataset.f){c[t.dataset.f]=t.value;if(t.dataset.f==="cantidad"&&+t.value>0)c.cuota=cuotaDe(t.value,c)}
+ else if(t.dataset.k){var r=c.rows[+t.dataset.i];
+  if(t.dataset.k==="mp")r.mp=t.checked;
+  else{r[t.dataset.k]=t.value;
+   if(t.dataset.k==="m"&&+t.value>0){if(!r.f)r.f=iso(new Date());if(!r.h)r.h=ahora();if(!r.firma)r.firma=cobrador}}}
+ else return;
+ save();render()});
+document.addEventListener("click",function(e){
+ var t=e.target.closest?(e.target.closest("button")||e.target):e.target,c=get();
+ if(t.id==="nuevo"||t.dataset.home||t.dataset.open||t.dataset.go||t.dataset.est||t.id==="print")panel="";
+ if(t.id==="cierre"){panel="cierre";est=false;render();window.scrollTo(0,0);return}
+ if(t.id==="reporte"){panel="reporte";est=false;repF="";render();window.scrollTo(0,0);return}
+ if(t.dataset.repdl){dlRep();return}
+ if(t.dataset.repcopy){copyTxt(repText());return}
+ if(t.id==="resp"){panel="resp";est=false;render();window.scrollTo(0,0);return}
+ if(t.dataset.hoja){panel="hoja";render();window.scrollTo(0,0);return}
+ if(t.dataset.pres){panel="resp";render();window.scrollTo(0,0);return}
+ if(t.dataset.pback){panel="";home=true;pendRest=null;render();window.scrollTo(0,0);return}
+ if(t.dataset.cierrey){guardarCierre();return}
+ if(t.dataset.cierrecopy){copyTxt(cierreText());return}
+ if(t.dataset.copylist){copyTxt(listText());return}
+ if(t.dataset.bak){bak();return}
+ if(t.dataset.rest){pickRest();return}
+ if(t.dataset.restyes){doRest();return}
+ if(t.dataset.restno){pendRest=null;render();return}
+ if(t.dataset.cobrarcl){cobrarCl(t.dataset.cobrarcl);return}
+ if(t.dataset.recibo){recibo(t.dataset.recibo);return}
+ if(t.dataset.undo){undoAsk=t.dataset.undo;render();return}
+ if(t.dataset.undono){undoAsk=null;render();return}
+ if(t.dataset.undoyes){undoCl(t.dataset.undoyes);return}
+ if(t.dataset.modo){panel="";modo=t.dataset.modo==="s"?"s":"d";var L0=lst();cur=L0.length?L0[0].id:null;est=false;home=true;delAsk=false;saveAsk=null;render();window.scrollTo(0,0);return}
+ if(t.id==="nuevo"){var n=blank(modo);clients.unshift(n);cur=n.id;est=false;home=false;delAsk=false;save();render();return}
+ if(t.id==="print"||t.dataset.est){if(c&&!home){est=true;delAsk=false;render();window.scrollTo(0,0)}else toast(c?"Abra primero un cliente.":"Primero cree un cliente.");return}
+ if(t.dataset.cam&&c){pickPhoto(t.dataset.cam);return}
+ if(t.dataset.save&&c){saveAsk=c.id;render();return}
+ if(t.dataset.saven){saveAsk=null;render();return}
+ if(t.dataset.savey&&c){if(!c.nombre||!(+c.cantidad>0)||!(+c.cuota>0)){toast("Complete el nombre, la cantidad y la cuota antes de guardar.");return}c.guardado=true;saveAsk=null;home=true;save();render();window.scrollTo(0,0);toast("Cliente guardado");return}
+ if(t.dataset.home){est=false;delAsk=false;home=true;render();window.scrollTo(0,0);return}
+ if(t.dataset.open){cur=t.dataset.open;home=false;render();window.scrollTo(0,0);return}
+ if(t.dataset.next||t.dataset.prev){var L=lst(),ix=L.findIndex(function(x){return x.id===cur}),n2=L.length;if(n2){ix=(ix+(t.dataset.next?1:n2-1))%n2;cur=L[ix].id;delAsk=false;render();window.scrollTo(0,0)}return}
+ if(t.dataset.go){cur=t.dataset.go;est=false;home=false;delAsk=false;render();window.scrollTo(0,0);return}
+ if(t.dataset.renovar&&c){var kk=calc(c),nc=+c.renov>0?+c.renov:+c.cantidad;
+  if(!(nc>0)){toast("Escriba el monto del nuevo crédito.");return}
+  if(nc<kk.saldo){toast("El nuevo crédito debe cubrir el saldo pendiente.");return}
+  var nw=blank(tp(c));c.hist=c.hist||[];c.hist.push({ini:c.inicio,fin:iso(new Date()),cant:+c.cantidad||0,cuota:+c.cuota||0,ef:(c.efectivo!=null?+c.efectivo:+c.cantidad)||0,ab:kk.ab,mora:kk.moraPend,rows:c.rows});
+  c.rows=nw.rows;c.inicio=nw.inicio;c.cantidad=nc;c.cuota=cuotaDe(nc,c);c.efectivo=nc-kk.saldo;c.renov="";c.cerrado=false;
+  
+  save();render();window.scrollTo(0,0);
+  toast("Crédito renovado desde hoy. Entregue "+q(c.efectivo)+". Cuota diaria: "+q(c.cuota)+".");return}
+ if(t.dataset.back){est=false;render();return}
+ if(t.dataset.dl&&c){dl(c);return}
+ if(t.dataset.print){try{window.print()}catch(x){toast("No se pudo abrir la impresión. Use «Descargar PDF».")}return}
+ if(t.dataset.copy&&c){var tx=estText(c,calc(c)),ok=false;
+  try{navigator.clipboard.writeText(tx).then(function(){toast("Estado de cuenta copiado")},function(){fb()});ok=true}catch(x){}
+  function fb(){var a=document.createElement("textarea");a.value=tx;document.body.appendChild(a);a.select();var r=false;try{r=document.execCommand("copy")}catch(x){}document.body.removeChild(a);toast(r?"Estado de cuenta copiado":"No se pudo copiar. Use Imprimir.")}
+  if(!ok)fb();return}
+ if(t.dataset.del&&c){est=false;home=false;delAsk=true;render();window.scrollTo(0,0);return}
+ if(t.dataset.delno){delAsk=false;render();return}
+ if(t.dataset.delyes&&c){["dpiF","dpiT","foto"].forEach(function(s){delPh(c.id+":"+s).catch(function(){})});clients=clients.filter(function(x){return x!==c});cur=lst().length?lst()[0].id:null;delAsk=false;home=true;save();render();toast("Cliente eliminado");return}
+ if(t.dataset.cobrar!==undefined&&c){
+  if(!(+c.cuota>0)){toast("Escriba primero la cuota diaria.");return}
+  var r=c.rows[+t.dataset.cobrar];r.f=iso(new Date());r.h=ahora();r.m=c.cuota;r.firma=cobrador||r.firma;save();render()}});
+render();
+</script>
+</body>
+</html>

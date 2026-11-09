@@ -1,0 +1,6 @@
+{
+  "name": "Tu Crédito Móvil · Cobros Diarios y Semanales",
+  "description": "Aplicación interactiva optimizada para Android y PWA para control de microcréditos, cobranza en ruta (diaria y semanal), escáner de DPI, recibos PDF, WhatsApp y cierre de caja.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
