@@ -148,28 +148,6 @@ export const SettingsView: React.FC<Props> = ({
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-4 space-y-4 pb-12 text-xs">
-      {/* Android Installation Hero Card */}
-      <div className="p-4 rounded-2xl bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white shadow-md flex items-center justify-between gap-3 flex-wrap">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-amber-400 text-blue-950 font-black flex items-center justify-center text-2xl shadow-lg">
-            Q
-          </div>
-          <div>
-            <h3 className="text-base font-black">Instalación y Configuración Android</h3>
-            <p className="text-xs text-blue-200">
-              Instala la aplicación en el teléfono del cobrador como app nativa o genera un APK
-            </p>
-          </div>
-        </div>
-
-        <button
-          onClick={onOpenInstallGuide}
-          className="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-blue-950 font-black text-xs shadow-md flex items-center gap-1.5 transition active:scale-95"
-        >
-          <Smartphone className="w-4 h-4 text-blue-950" />
-          <span>Ver Guía de Instalación Android</span>
-        </button>
-      </div>
 
       {/* Collector Settings */}
       <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">

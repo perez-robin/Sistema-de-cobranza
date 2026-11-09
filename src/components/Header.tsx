@@ -46,16 +46,13 @@ export const Header: React.FC<Props> = ({
                 MÓVIL
               </span>
             </h1>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium leading-none">
-              Cobranza en Ruta · Guatemala
-            </p>
           </div>
         </div>
 
         {/* Action Controls */}
         <div className="flex items-center gap-1.5">
-          {/* Quick Install Button for Android */}
-          {isInstallable ? (
+          {/* Quick Install Button for Android (only if browser can install PWA) */}
+          {isInstallable && (
             <button
               onClick={install}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition animate-pulse"
@@ -63,15 +60,6 @@ export const Header: React.FC<Props> = ({
             >
               <Smartphone className="w-3.5 h-3.5" />
               <span>Instalar</span>
-            </button>
-          ) : (
-            <button
-              onClick={onOpenInstallGuide}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60 text-xs font-semibold transition"
-              title="Guía para Android"
-            >
-              <Smartphone className="w-3.5 h-3.5 text-blue-600" />
-              <span className="hidden sm:inline">Guía Android</span>
             </button>
           )}
 
